@@ -1,42 +1,20 @@
-# sv
+#### Join coduh's Community
+[![Twitch](https://img.shields.io/badge/Twitch-%239146FF.svg?style=for-the-badge&logo=Twitch&logoColor=white)](https://twitch.tv/coduh) [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/cTVvyh3zke) [![TikTok](https://img.shields.io/badge/TikTok-%23000000.svg?style=for-the-badge&logo=TikTok&logoColor=white)](https://tiktok.com/@coduhz) 
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+#### App Built With
+[![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)](https://github.com/microsoft/TypeScript) [![Svelte](https://img.shields.io/badge/sveltekit-%23f1413d.svg?style=for-the-badge&logo=svelte&logoColor=white)](https://github.com/sveltejs/svelte) [![Drizzle](https://img.shields.io/badge/Drizzle-%23000000?style=for-the-badge&logo=drizzle&logoColor=C5F74F)](https://github.com/drizzle-team/drizzle-orm) [![Duckylib](https://files.ducky.wiki/share/public_assets/projects/duckylib/DuckylibBadge.svg)](https://ducky.wiki/travel/github/duckylib)
 
-## Creating a project
+#### @Coduh-Twitch
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Coduh-Twitch)
 
-If you're seeing this, you've probably already done this step. Congrats!
+---
 
-```sh
-# create a new project
-npx sv create my-app
-```
+# Twitch-Webapp
+A simple Svelte app utilizing [Duckylib](https://ducky.wiki/travel/github/duckylib) and Twitch OAuth
 
-To recreate this project with the same configuration:
+OAuth access is only available to the specified user
 
-```sh
-# recreate this project
-npx sv@0.15.1 create --template minimal --types ts --add drizzle="database:sqlite+sqlite:better-sqlite3" mdsvex --install npm ./
-```
+---
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+#### Made by @duckyyylol
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://ducky.wiki/travel/github) [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://ducky.wiki/travel/discord) [![ducky](https://files.ducky.wiki/share/public_assets/ducky/DuckyBadge.svg)](https://ducky.wiki) 
