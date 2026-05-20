@@ -1,0 +1,28 @@
+
+import { integer, sqliteTable, text,  } from 'drizzle-orm/sqlite-core';
+
+export interface DBAccount {
+	id: string;
+	user_id: string;
+	username: string;
+	avatar_url: string;
+}
+
+export const users = sqliteTable("users", {
+	id: text("id").notNull().primaryKey(),
+	username: text("username").notNull(),
+	avatarUrl: text("avatarUrl").notNull(),
+	role: integer("role").notNull()
+})
+
+export const app_config = sqliteTable("app_config", {
+	id: text("id").notNull().primaryKey().$defaultFn(() => crypto.randomUUID()),
+})
+
+export const sessions = sqliteTable("sessions", {
+	id: text("id").notNull().primaryKey().$defaultFn(() => crypto.randomUUID()),
+	user_id: text("user_id").notNull(),
+	access_token: text("access_token").notNull(),
+	refresh_token: text("refresh_token"),
+	expires_at: integer("expires_at").notNull()
+});
