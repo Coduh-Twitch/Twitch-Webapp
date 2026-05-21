@@ -3,6 +3,8 @@ export const AppConfig = {
 	scopes: [
 		"channel:manage:broadcast",
 		"channel:read:goals",
-		"moderator:read:followers"
+		"moderator:read:followers",
+		"channel:manage:vips",
+		"channel:read:hype_train"
     ]
 }
