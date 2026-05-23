@@ -1,6 +1,8 @@
+import { refreshToken } from '$lib/auth.js';
+import { getSession, updateSession } from '$lib/server/db/sessions.js';
 import { getDatabaseUser } from '$lib/server/db/users.js';
 import { getUserById, getUserByLogin, getUserFromToken } from '$lib/twitch.js';
-import type {TwitchUser } from '$lib/types.js';
+import type { TwitchUser } from '$lib/types.js';
 import { apiResponse, get, parseCookie } from '$lib/util.js';
 import { json } from '@sveltejs/kit';
 import type { Auth } from 'duckylib';
@@ -15,7 +17,7 @@ export const GET = async ({ cookies, params, request }): Promise<Response> => {
     let apiUser: TwitchUser | null = null;
 
     let response = await get(request, cookies);
-    if(response instanceof Response) return response;
+    if (response instanceof Response) return response;
     apiUser = response as TwitchUser | null;
 
     let requesterId = apiUser?.id;
@@ -32,18 +34,33 @@ export const GET = async ({ cookies, params, request }): Promise<Response> => {
     }
 
     if (userId !== null) {
-        console.log("SEARCHING USER ID", userId)
-        console.log("USER ID IS NAN?", Number.isNaN(Number(userId)))
+        if (!tokenCookie) {
+            let session = getSession();
+            if (session && session.refresh_token) {
+                let refreshed = await refreshToken(session.refresh_token);
+                if (refreshed) {
+                    let token: Auth.AccessToken = refreshed;
+                    let tokenExpiresAt = Date.now() + ((token?.expires_in || 0) * 1000);
+                    let tokenUser = await getUserFromToken(token.access_token);
+
+                    if(tokenUser) {
+                        console.log(`[DEBUG] Refreshed token for user ${tokenUser.display_name}`)
+                        tokenCookie = refreshed.access_token;
+                        updateSession({ access_token: token.access_token, expires_at: tokenExpiresAt, user_id: tokenUser.id, refresh_token: token.refresh_token})
+                    }
+                }
+            }
+        }
 
         let split = userId.split("");
-        
+
         let dbUser = null;
-        if(!Number.isNaN(Number(userId))) {
+        if (!Number.isNaN(Number(userId))) {
             dbUser = await getUserById(userId, tokenCookie);
         } else {
             dbUser = await getUserByLogin(userId, tokenCookie);
         }
-        
+
         if (dbUser !== null) {
             statusCode = 200;
 
