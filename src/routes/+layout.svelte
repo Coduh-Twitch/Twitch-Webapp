@@ -42,7 +42,13 @@
 					label: "Commands",
 					pathname: "/commands",
 					symbol: "code_xml"
-				}
+				},
+				{
+					label: "Documentation", 
+					symbol: "book", 
+					pathname: "https://docs.ducky.wiki/coduh/twitch_guide"
+				},
+
 			]}
 			authFeatures={true}
 			onlogin={async () => {
