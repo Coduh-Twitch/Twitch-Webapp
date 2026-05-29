@@ -2,7 +2,7 @@
 	import "duckylib/styles/globals.css";
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/favicon.png';
     import { Website, Header, setUserData, getTheme } from 'duckylib';
     import { onMount } from 'svelte';
     import { page } from "$app/state";
@@ -26,6 +26,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<title>ShortBotduh</title>
 </svelte:head>
 
 {#if page.url.pathname as string === "/overlay"}
