@@ -29,7 +29,7 @@
 	<title>ShortBotduh</title>
 </svelte:head>
 
-{#if page.url.pathname as string === "/overlay"}
+{#if (page.url.pathname as string).startsWith("/overlay")}
 {@render children()}
 {:else}
 <Website options={{ theme: "dark" }}>

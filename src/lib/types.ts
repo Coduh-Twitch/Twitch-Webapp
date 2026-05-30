@@ -27,6 +27,21 @@ export interface DBSession {
     expires_at: number;
 }
 
+export interface DBTimer {
+	id: string;
+	seconds: number;
+	started_at: Date;
+	visible: boolean;
+	paused: boolean;
+	label: string;
+}
+
+export interface DBNotice {
+	id: string;
+	visible: boolean;
+	label: string;
+}
+
 // Twitch API Types
 
 export enum TwitchBroadcasterTypes {
