@@ -35,7 +35,7 @@
         return res.data || defaultConfig;
     }
 
-    let showTimeAnyway = $state(false);
+    // let showTimeAnyway = $state(false);
 
     onMount(async () => {
         timer = await fetchTimer();
@@ -58,10 +58,10 @@
         spoofifyConfig = await fetchSpoofifyConfig();
         }, 5e2);
 
-        setInterval(() => {
-            if(!timer.paused && showTimeAnyway) showTimeAnyway = false;
-            if(timer.paused) showTimeAnyway = !showTimeAnyway;
-        },10e3)
+        // setInterval(() => {
+        //     if(!timer.paused && showTimeAnyway) showTimeAnyway = false;
+        //     if(timer.paused) showTimeAnyway = !showTimeAnyway;
+        // },10e3)
     });
 
     let timer: DBTimer = $state({
@@ -97,10 +97,10 @@
                   : 'var(--yellow)'};"
         >
             <Row widthPx="fit" heightPx="fit" gapEm={0.33}>
-            {#if timer.paused && showTimeAnyway}
+            {#if timer.paused}
                 <Symbol name="pause" inheritColor={true} sizePx={32} />
             {/if}
-                <Text inheritColor={true} sizeEm={1.66} weight="boldest" classList={timer.paused ? ["red"] : []}>{(timer.paused && !showTimeAnyway) ? "Paused" : formattedDuration}</Text
+                <Text inheritColor={true} sizeEm={1.66} weight="boldest" classList={timer.paused ? ["red"] : []}>{formattedDuration}</Text
             >
             </Row>
         </div>
