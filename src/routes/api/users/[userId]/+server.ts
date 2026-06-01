@@ -11,6 +11,25 @@ import type { Auth } from 'duckylib';
 
 export const GET = async ({ cookies, params, request }): Promise<Response> => {
     let tokenCookie = cookies.get("token-0") || null;
+
+    if (!tokenCookie) {
+        let session = getSession();
+        if (session && session.refresh_token) {
+            let refreshed = await refreshToken(session.refresh_token);
+            if (refreshed) {
+                let token: Auth.AccessToken = refreshed;
+                let tokenExpiresAt = Date.now() + ((token?.expires_in || 0) * 1000);
+                let tokenUser = await getUserFromToken(token.access_token);
+
+                if(tokenUser) {
+                    console.log(`[DEBUG] Refreshed token for user ${tokenUser.display_name}`)
+                    tokenCookie = refreshed.access_token;
+                    updateSession({ access_token: token.access_token, expires_at: tokenExpiresAt, user_id: tokenUser.id, refresh_token: token.refresh_token})
+                }
+            }
+        }
+    }
+
     let userId: string | null = params.userId;
     let failReason = "";
     let statusCode = 200;
@@ -32,25 +51,10 @@ export const GET = async ({ cookies, params, request }): Promise<Response> => {
             statusCode = 400;
         }
     }
+    
+    
 
     if (userId !== null) {
-        if (!tokenCookie) {
-            let session = getSession();
-            if (session && session.refresh_token) {
-                let refreshed = await refreshToken(session.refresh_token);
-                if (refreshed) {
-                    let token: Auth.AccessToken = refreshed;
-                    let tokenExpiresAt = Date.now() + ((token?.expires_in || 0) * 1000);
-                    let tokenUser = await getUserFromToken(token.access_token);
-
-                    if(tokenUser) {
-                        console.log(`[DEBUG] Refreshed token for user ${tokenUser.display_name}`)
-                        tokenCookie = refreshed.access_token;
-                        updateSession({ access_token: token.access_token, expires_at: tokenExpiresAt, user_id: tokenUser.id, refresh_token: token.refresh_token})
-                    }
-                }
-            }
-        }
 
         let split = userId.split("");
 

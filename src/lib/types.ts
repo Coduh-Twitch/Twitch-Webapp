@@ -42,6 +42,25 @@ export interface DBNotice {
 	label: string;
 }
 
+export interface DBClip {
+    id: string;
+    title: string;
+    game: string;
+    gameId: string;
+    createdDate: Date;
+    featured: boolean;
+    creatorName: string;
+    creatorId: string;
+    embedUrl: string;
+    views: number;
+    channel: string;
+}
+
+export interface DBClipVisibility {
+    channel: string;
+    visible: boolean;
+}
+
 // Twitch API Types
 
 export enum TwitchBroadcasterTypes {
