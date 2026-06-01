@@ -34,6 +34,7 @@ export interface DBTimer {
 	visible: boolean;
 	paused: boolean;
 	label: string;
+    show_label: boolean;
 }
 
 export interface DBNotice {

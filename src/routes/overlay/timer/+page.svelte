@@ -71,6 +71,7 @@
         seconds: 0,
         started_at: new Date(),
         visible: false,
+        show_label: false
     });
     let formattedDuration: string = $state("00:00");
     let spoofifyConfig: typeof defaultConfig = $state(defaultConfig);
@@ -84,10 +85,12 @@
         border-radius: ${spoofifyConfig.border_radius}px;
         border: ${spoofifyConfig.stroke_width / 2}px solid ${spoofifyConfig.stroke_color};
         word-break: break-all;
-        
+        justify-content: ${timer.show_label ? "space-between" : "center"};
 
     `}>
-        <Text inheritColor={true} sizeEm={1.33} weight="bolder" maxLines={1}>{timer.label}</Text>
+        <div class="label" style="display: {timer.show_label ? "flex" : "none"};">
+            <Text inheritColor={true} sizeEm={1.33} weight="bolder" maxLines={1}>{timer.label}</Text>
+        </div>
         <div
             class="duration{timer.paused ? " pausing" : ""}"
             style="color: {timer.paused ? "var(--red)" : timer.seconds === 0
@@ -111,10 +114,12 @@
     @keyframes fadeOut {
         from {
             opacity: 1;
+            display: block;
         }
 
         to {
             opacity: 0;
+            display: none;
         }
     }
 
@@ -142,7 +147,7 @@
         display: flex;
         padding: 0.66em 3em 0.66em 1.66em;
         align-items: center;
-        justify-content: space-between;
+        
         gap: 2em;
     }
 
