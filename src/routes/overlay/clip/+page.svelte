@@ -40,7 +40,8 @@
         download_url:
             "https://ducky.wiki/_app/immutable/assets/duckypfptransparent.DjoImAvR.png",
         portrait_download_url: null,
-        creator_profile_image: "https://ducky.wiki/_app/immutable/assets/duckypfptransparent.DjoImAvR.png"
+        creator_profile_image:
+            "https://ducky.wiki/_app/immutable/assets/duckypfptransparent.DjoImAvR.png",
     };
 
     async function fetchClip(): Promise<DBClip> {
@@ -56,7 +57,9 @@
     }
 
     async function clipFinished(): Promise<void> {
-        await (await fetch(`/api/clip/next?clip=${clip.id}`, { method: "POST" })).json();
+        await (
+            await fetch(`/api/clip/next?clip=${clip.id}`, { method: "POST" })
+        ).json();
     }
 
     async function fetchSpoofifyConfig(): Promise<typeof defaultConfig> {
@@ -73,18 +76,11 @@
         clip = await fetchClip();
         clipVisible = await fetchClipVisibility();
 
-        if(clip.download_url) download_url = clip.download_url;
+        if (clip.download_url) download_url = clip.download_url;
 
         spoofifyConfig = await fetchSpoofifyConfig();
 
         setInterval(async () => {
-            clip = await fetchClip();
-            clipVisible = await fetchClipVisibility();
-
-            if (!clip || clip.id === "ClipNotFound") await clipFinished();
-
-            if(clip.download_url) download_url = clip.download_url;
-
             spoofifyConfig = await fetchSpoofifyConfig();
 
             // if(notice.visible && !expirationTimeout) {
@@ -96,7 +92,16 @@
             //     clearTimeout(expirationTimeout);
             //     expirationTimeout = null;
             // }
-        }, 20e3);
+
+            if (!clip || clip.id === "ClipNotFound") {
+                clip = await fetchClip();
+                clipVisible = await fetchClipVisibility();
+
+                if (!clip || clip.id === "ClipNotFound") await clipFinished();
+
+                if (clip.download_url) download_url = clip.download_url;
+            }
+        }, 1e3);
 
         // if(browser) {
         //     document.querySelector("body")?.click();
@@ -108,10 +113,8 @@
     let clip: DBClip = $state(defaultClip);
     let clipVisible: boolean = $state(false);
     let spoofifyConfig: typeof defaultConfig = $state(defaultConfig);
-    let download_url: string | null = $state(null)
+    let download_url: string | null = $state(null);
     let reset_home: boolean = $state(true);
-
-
 </script>
 
 {#if clip && clip.id !== "ClipNotFound" && download_url}
@@ -128,15 +131,26 @@
     >
         <!-- <Text weight="bolder" maxLines={1} sizeEm={1.66}>🎮 {clip.game}</Text> -->
         <Text weight="bolder" maxLines={1} sizeEm={1.66}>{clip.title}</Text>
-        
-        
-        <Row widthPx="fit" heightPx="fit" alignItems="center" justifyContent="center" gapEm={1}>
+
+        <Row
+            widthPx="fit"
+            heightPx="fit"
+            alignItems="center"
+            justifyContent="center"
+            gapEm={1}
+        >
             <Text weight="bold" maxLines={1} sizeEm={1}
-                >{(new Date(clip.createdDate)).toLocaleDateString("en-US", {dateStyle: "long"})}</Text
+                >{new Date(clip.createdDate).toLocaleDateString("en-US", {
+                    dateStyle: "long",
+                })}</Text
             >
             <!-- {clip.createdDate} -->
-            <img src="{clip.creator_profile_image}" alt="by @{clip.creatorName}" width="36px" style="border-radius: {spoofifyConfig.border_radius}px;">
-        
+            <img
+                src={clip.creator_profile_image}
+                alt="by @{clip.creatorName}"
+                width="36px"
+                style="border-radius: {spoofifyConfig.border_radius}px;"
+            />
         </Row>
     </div>
     {#key download_url}
@@ -166,28 +180,43 @@
                 style="aspect-ratio: 16/9;border-radius: {spoofifyConfig.border_radius}px;border: {spoofifyConfig.stroke_width /
                     2}px solid {spoofifyConfig.stroke_color};margin-left:auto;margin-right:auto;"
             ></iframe> -->
-            <video src="{download_url}" style="aspect-ratio: 16/9;border-radius: {spoofifyConfig.border_radius}px;border: {spoofifyConfig.stroke_width /
-                    2}px solid {spoofifyConfig.stroke_color};margin-left:auto;margin-right:auto;" height="99%" width="99%" autoplay muted={false}
-                    loop={false} onplaying={async (e) => {
+            <video
+                src={download_url}
+                style="aspect-ratio: 16/9;border-radius: {spoofifyConfig.border_radius}px;border: {spoofifyConfig.stroke_width /
+                    2}px solid {spoofifyConfig.stroke_color};margin-left:auto;margin-right:auto;"
+                height="99%"
+                width="99%"
+                autoplay
+                muted={false}
+                loop={false}
+                onplaying={async (e) => {
                     console.log("clip duration", clip.duration_seconds);
                     clipVisible = true;
                     setTimeout(() => {
                         clipVisible = false;
-                    },5e3)
+                    }, 5e3);
                     if (clip && clip.duration_seconds !== 0) {
                         setTimeout(
-                            async () => {    
-                                console.log("Playback Ended")
-                                console.log("[DEBUG]", "Refreshing Clip")
-                                await clipFinished();     
+                            async () => {
+                                console.log("Playback Ended");
+                                console.log("[DEBUG]", "Refreshing Clip");
+                                await clipFinished();
+                                clip = await fetchClip();
+                                clipVisible = await fetchClipVisibility();
+
+                                if (!clip || clip.id === "ClipNotFound")
+                                    await clipFinished();
+
+                                if (clip.download_url)
+                                    download_url = clip.download_url;
                             },
-                            Math.floor((clip.duration_seconds) * 1000),
+                            Math.floor(clip.duration_seconds * 1000),
                         );
                     }
-                }} onended={async () => {
-                    
-                }} controls={false}>
-
+                }}
+                onended={async () => {}}
+                controls={false}
+            >
             </video>
         </div>
     {/key}
