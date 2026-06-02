@@ -55,6 +55,10 @@ export interface DBClip {
     embedUrl: string;
     views: number;
     channel: string;
+    duration_seconds: number;
+    portrait_download_url: string | null;
+    download_url: string;
+    creator_profile_image: string;
 }
 
 export interface DBClipVisibility {

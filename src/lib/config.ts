@@ -5,6 +5,7 @@ export const AppConfig = {
 		"channel:read:goals",
 		"moderator:read:followers",
 		"channel:manage:vips",
-		"channel:read:hype_train"
+		"channel:read:hype_train",
+		"channel:manage:clips"
     ]
 }
