@@ -126,7 +126,7 @@
         border-radius: ${spoofifyConfig.border_radius}px;
         border: ${spoofifyConfig.stroke_width / 2}px solid ${spoofifyConfig.stroke_color};
         word-break: break-all;
-        
+
     `}
     >
         <!-- <Text weight="bolder" maxLines={1} sizeEm={1.66}>🎮 {clip.game}</Text> -->
@@ -155,31 +155,6 @@
     </div>
     {#key download_url}
         <div class="video">
-            <!-- svelte-ignore a11y_media_has_caption -->
-            <!-- svelte-ignore a11y_missing_attribute -->
-            <!-- <iframe
-                id="frame"
-                onload={async (e) => {
-                    console.log("clip duration", clip.duration_seconds);
-                    if (clip && clip.duration_seconds !== 0) {
-                        setTimeout(
-                            async () => {
-                                if (clip.id !== "ClipNotFound")
-                                    await clipFinished();
-                            },
-                            Math.floor((clip.duration_seconds + 2) * 1000),
-                        );
-                    }
-                }}
-                src="{clip.embedUrl}&parent={page.url
-                    .hostname}&autoplay=true&muted=true&width=1920&height=1080"
-                allow="autoplay; fullscreen; encrypted-media"
-                allowfullscreen={false}
-                width="99%"
-                height="100%"
-                style="aspect-ratio: 16/9;border-radius: {spoofifyConfig.border_radius}px;border: {spoofifyConfig.stroke_width /
-                    2}px solid {spoofifyConfig.stroke_color};margin-left:auto;margin-right:auto;"
-            ></iframe> -->
             <video
                 src={download_url}
                 style="aspect-ratio: 16/9;border-radius: {spoofifyConfig.border_radius}px;border: {spoofifyConfig.stroke_width /

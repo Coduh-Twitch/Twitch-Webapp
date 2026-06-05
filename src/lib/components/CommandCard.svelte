@@ -10,7 +10,8 @@
     import { MediaQuery } from "svelte/reactivity";
 
     import badge_Mod from "$lib/assets/badges/moderator.png";
-    import badge_Chatbot from "$lib/assets/badges/chatbot.png";
+    import badge_LeadMod from "$lib/assets/badges/lead-moderator.png";
+    // import badge_Chatbot from "$lib/assets/badges/chatbot.png";
     import badge_Vip from "$lib/assets/badges/vip.png";
     import badge_Broadcaster from "$lib/assets/badges/broadcaster.png";
     import { browser } from "$app/environment";
@@ -97,12 +98,12 @@
                         alt="Twitch Broadcaster Badge"
                     />
                 {/if}
-                {#if command.userLevel === UserRoles.BOT}
+                {#if command.userLevel === UserRoles.LEAD_MOD}
                     <img
                         class="badge"
-                        src={badge_Chatbot}
+                        src={badge_LeadMod}
                         title="{command.userLevel}-Only Command"
-                        alt="Twitch Chat Bot Badge"
+                        alt="Twitch Chat Lead Moderator Badge"
                     />
                 {/if}
             {/if}
@@ -142,16 +143,16 @@
                         alt="Twitch Broadcaster Badge"
                     />
                 {/if}
-                {#if subcommand.userLevel === UserRoles.BOT}
+                {#if subcommand.userLevel === UserRoles.LEAD_MOD}
                     <img
                         class="badge"
-                        src={badge_Chatbot}
+                        src={badge_LeadMod}
                         title="{subcommand.userLevel}-Only Command"
                         alt="Twitch Chat Bot Badge"
                     />
                 {/if}
             {/if}
-            <Text weight="bold" 
+            <Text weight="bold"
                 >!{command?.name}
                 {subcommand.name}
                 {subcommand.args?.map((a) => ` {${a.name}}`).join("")}</Text
@@ -183,10 +184,10 @@
                         alt="Twitch Broadcaster Badge"
                     />
                 {/if}
-                {#if customCommand.userLevel === UserRoles.BOT}
+                {#if customCommand.userLevel === UserRoles.LEAD_MOD}
                     <img
                         class="badge"
-                        src={badge_Chatbot}
+                        src={badge_LeadMod}
                         title="{customCommand.userLevel}-Only Command"
                         alt="Twitch Chat Bot Badge"
                     />
