@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from "$app/state";
     import type { TTSQueueItem } from "$lib/types";
     import { onMount } from "svelte";
 
@@ -115,7 +116,7 @@
     });
 </script>
 
-{#if playing}
+{#if playing && page.url.hostname.includes("localhost")}
     <h1>{currentQueueItem?.content}</h1>
 {/if}
 <audio bind:this={audio} autoplay volume={0.3}></audio>
