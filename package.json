@@ -37,6 +37,7 @@
 		"@sveltejs/adapter-node": "^5.5.4",
 		"axios": "^1.15.1",
 		"better-sqlite3": "^12.8.0",
-		"duckylib": "^0.1.23"
+		"duckylib": "^0.1.23",
+		"node-edge-tts": "^1.2.10"
 	}
 }
