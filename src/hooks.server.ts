@@ -12,7 +12,10 @@ export const handle: Handle = async ({ event, resolve }) => {
   //
   //
   if (event.url.pathname.includes("api/tts/speak"))
-    event.setHeaders({ "Content-Type": "audio/mpeg" });
+    event.setHeaders({
+      "Content-Type": "audio/mp3",
+      "Cache-Control": "no-store",
+    });
 
   const response = await resolve(event);
   return response;

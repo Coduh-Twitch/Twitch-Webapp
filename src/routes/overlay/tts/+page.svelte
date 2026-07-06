@@ -116,7 +116,7 @@
     });
 </script>
 
-{#if playing && page.url.hostname.includes("localhost")}
+{#if playing && ["localhost", "dev.ducky.wiki"].includes(page.url.hostname)}
     <h1>{currentQueueItem?.content}</h1>
 {/if}
 <audio bind:this={audio} autoplay volume={0.3}></audio>

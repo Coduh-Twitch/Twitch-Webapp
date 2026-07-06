@@ -11,7 +11,6 @@ import {
   statSync,
   unlinkSync,
 } from "fs";
-import { EdgeTTS } from "node-edge-tts";
 import { tmpdir } from "os";
 import { join } from "path";
 import { Readable } from "stream";
