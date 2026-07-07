@@ -67,7 +67,7 @@
         }
 
         audio = new Audio(url);
-        audio.volume = 0.08;
+        audio.volume = 0.3;
         audio.play();
 
         audio.onplay = () => {
