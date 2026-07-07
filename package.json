@@ -35,8 +35,11 @@
 	},
 	"dependencies": {
 		"@sveltejs/adapter-node": "^5.5.4",
+		"@types/fluent-ffmpeg": "^2.1.28",
 		"axios": "^1.15.1",
 		"better-sqlite3": "^12.8.0",
-		"duckylib": "^0.1.23"
+		"duckylib": "^0.1.23",
+		"fluent-ffmpeg": "^2.1.3",
+		"svelte-awesome-color-picker": "^4.1.0"
 	}
 }
