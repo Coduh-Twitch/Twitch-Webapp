@@ -34,5 +34,10 @@
             ><Heading size={4} inheritColor={true}><u>View Commands</u></Heading
             ></a
         >
+        <a href="/dashboard"
+            ><Heading size={4} inheritColor={true}
+                ><u>Go to Dashboard</u></Heading
+            ></a
+        >
     {/if}
 </Column>
