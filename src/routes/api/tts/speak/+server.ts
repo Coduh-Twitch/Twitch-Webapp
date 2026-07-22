@@ -23,8 +23,16 @@ export const POST = async ({
 }): Promise<Response> => {
   const utterance: TTSQueueItem = await request.json();
   utterancePath(utterance);
-  const { bits, content, isTos, sentAt, sentById, sentByUsername, voice } =
-    utterance;
+  const {
+    bits,
+    content,
+    isTos,
+    sentAt,
+    sentById,
+    sentByUsername,
+    voice,
+    streak,
+  } = utterance;
   if (!content || !sentAt || !sentById || !sentByUsername || !voice)
     return new Response(null);
 
@@ -32,7 +40,11 @@ export const POST = async ({
 
   if (bits && bits > 0) {
     finalContent = `${sentByUsername} cheered, x ${toWords(bits.toString())}: ${content}`;
-  } else finalContent = `${sentByUsername} said ${content}`;
+  } else if (streak && streak > 0) {
+    finalContent = `${sentByUsername} has watched ${toWords(streak.toString())} stream${streak === 1 ? "" : "s"} in a row! \"${content}\"`;
+  } else {
+    finalContent = `${sentByUsername} said ${content}`;
+  }
 
   try {
     const res = await fetch(
