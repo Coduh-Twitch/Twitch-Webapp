@@ -82,6 +82,19 @@ export interface DBSoundAlertQueueItem {
   sent_by_username: string;
 }
 
+export interface DBAmazonProduct {
+  asin: string;
+  title: string;
+  price: number;
+  price_symbol: string;
+  url: string;
+  image_url: string;
+  added_at: number;
+  added_by_id: string;
+  added_by_username: string;
+  categories: string[];
+}
+
 export enum TTSVoices {
   CHRISTOPHER = "en-US-ChristopherNeural",
   ARIA = "en-US-AriaNeural",

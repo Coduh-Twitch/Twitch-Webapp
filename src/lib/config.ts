@@ -10,5 +10,6 @@ export const AppConfig = {
     "channel:read:redemptions",
     "channel:manage:redemptions",
     "clips:edit",
+    "user:read:moderated_channels",
   ],
 };
