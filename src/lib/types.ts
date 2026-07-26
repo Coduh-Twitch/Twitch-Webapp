@@ -15,6 +15,13 @@ export interface ApiResponse<T = any> {
 
 export interface DBAppConfig {
   id: string;
+  death_count: number;
+  stuck_count: number;
+  reward_tts_enabled: boolean;
+  cheer_tts_enabled: boolean;
+  command_tts_emabled: boolean;
+  show_stuck_count: boolean;
+  show_death_count: boolean;
 }
 
 export interface DBSession {

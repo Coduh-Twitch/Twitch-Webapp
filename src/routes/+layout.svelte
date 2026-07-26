@@ -64,6 +64,11 @@
             pathname: "/amazon",
             symbol: "shopping_bag",
         });
+        nav.unshift({
+            label: "Death Counter",
+            pathname: "/deathcounter",
+            symbol: "skull",
+        });
     }
 </script>
 
