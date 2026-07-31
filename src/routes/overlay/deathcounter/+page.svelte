@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { ApiResponse, DBAppConfig } from "$lib/types";
+    import { SlopMode, type ApiResponse, type DBAppConfig } from "$lib/types";
     import { Button, Column, getUserData, Heading, Text, Row } from "duckylib";
     import { onMount } from "svelte";
     import glorp from "$lib/assets/emotes/glorp.png";
@@ -50,6 +50,7 @@
     let config: DBAppConfig | null = $state(null);
 
     let mode: "stuck" | "deaths" | "none" = $state("deaths");
+    let videoId = $state("a");
 
     onMount(async () => {
         config = await getAppConfig();
@@ -79,6 +80,9 @@
                     mode = "none";
                 } else mode = "deaths";
             }
+            if (config?.slop_mode === SlopMode.SUBWAY_SURFERS)
+                videoId = "ChBg4aowzX8";
+            if (config?.slop_mode === SlopMode.SOAP) videoId = "v0SNzh1Zx7A";
         }, 3e2);
 
         let i = $state(0);
@@ -108,23 +112,36 @@
         ? ' hidden'
         : ' showing'}"
 >
-    <img src={emote} />
-    {#if mode === "deaths"}
-        <h1>Deaths:</h1>
-        <h1>
-            {(config?.death_count || 0) === 67
-                ? `67 :(`
-                : config?.death_count === 69
-                  ? "69 ;)"
-                  : (config?.death_count || 0).toLocaleString()}
-        </h1>
-    {:else if mode === "stuck"}
-        <h1>
-            Stuck: {config?.stuck_count || 0} Time{(config?.stuck_count ||
-                0) === 1
-                ? ""
-                : "s"}
-        </h1>
+    {#if !config?.slop_mode || ((config?.slop_mode || 0) as SlopMode) === SlopMode.NONE}
+        <img src={emote} />
+        {#if mode === "deaths"}
+            <h1>Deaths:</h1>
+            <h1>
+                {(config?.death_count || 0) === 67
+                    ? `67 :(`
+                    : config?.death_count === 69
+                      ? "69 ;)"
+                      : (config?.death_count || 0).toLocaleString()}
+            </h1>
+        {:else if mode === "stuck"}
+            <h1>
+                Stuck: {config?.stuck_count || 0} Time{(config?.stuck_count ||
+                    0) === 1
+                    ? ""
+                    : "s"}
+            </h1>
+        {/if}
+    {:else}
+        <iframe
+            width="160"
+            height="90"
+            src="https://www.youtube.com/embed/{videoId}?autoplay=1&mute=1&rel=0&modestbranding&loop=1"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+        ></iframe>
     {/if}
     <!-- <img src={twerk} />
     <h1>"coduh stinks" in chat</h1> -->

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { ApiResponse, DBAppConfig } from "$lib/types";
+    import { SlopMode, type ApiResponse, type DBAppConfig } from "$lib/types";
     import {
         Button,
         Column,
@@ -47,6 +47,14 @@
     async function toggleStuckVisibility(): Promise<void> {
         const res = await (
             await fetch(`/api/bot/config/togglevisibility/stuck`, {
+                method: "POST",
+            })
+        ).json();
+    }
+
+    async function setSlopMode(mode: SlopMode): Promise<void> {
+        const res = await (
+            await fetch(`/api/bot/config/slopmode/${mode}`, {
                 method: "POST",
             })
         ).json();
@@ -151,6 +159,36 @@
                         : "Show Counter"}
                     type={config.show_stuck_count ? "danger" : "success"}
                     onclick={async () => await toggleStuckVisibility()}
+                />
+            </Row>
+            <HorizontalRule />
+            <Text>Slop Mode</Text>
+            <!-- <Heading>{config.stuck_count.toLocaleString()}</Heading> -->
+            <Row justifyContent="center" flexWrap>
+                <Button
+                    label="Subway Surfers"
+                    type={config.slop_mode === SlopMode.SUBWAY_SURFERS
+                        ? "success"
+                        : "secondary"}
+                    size="normal"
+                    onclick={async () =>
+                        await setSlopMode(SlopMode.SUBWAY_SURFERS)}
+                />
+                <Button
+                    label="Soap Cutting"
+                    type={config.slop_mode === SlopMode.SOAP
+                        ? "success"
+                        : "secondary"}
+                    size="normal"
+                    onclick={async () => await setSlopMode(SlopMode.SOAP)}
+                />
+                <Button
+                    label="None (Hide Slop)"
+                    type={config.slop_mode === SlopMode.NONE
+                        ? "success"
+                        : "secondary"}
+                    size="normal"
+                    onclick={async () => await setSlopMode(SlopMode.NONE)}
                 />
             </Row>
         {/if}

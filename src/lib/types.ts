@@ -13,6 +13,12 @@ export interface ApiResponse<T = any> {
   status?: number;
 }
 
+export enum SlopMode {
+  NONE,
+  SUBWAY_SURFERS,
+  SOAP,
+}
+
 export interface DBAppConfig {
   id: string;
   death_count: number;
@@ -22,6 +28,7 @@ export interface DBAppConfig {
   command_tts_emabled: boolean;
   show_stuck_count: boolean;
   show_death_count: boolean;
+  slop_mode: SlopMode;
 }
 
 export interface DBSession {
