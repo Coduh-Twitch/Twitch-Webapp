@@ -17,10 +17,12 @@ export enum SlopMode {
   NONE,
   SUBWAY_SURFERS,
   SOAP,
+  CUSTOM,
 }
 
 export interface DBAppConfig {
   id: string;
+  custom_video_id: string;
   death_count: number;
   stuck_count: number;
   reward_tts_enabled: boolean;
