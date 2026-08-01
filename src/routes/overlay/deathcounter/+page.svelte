@@ -82,7 +82,9 @@
             }
             if (config?.slop_mode === SlopMode.SUBWAY_SURFERS)
                 videoId = "ChBg4aowzX8";
-            if (config?.slop_mode === SlopMode.SOAP) videoId = "v0SNzh1Zx7A";
+            if (config?.slop_mode === SlopMode.SOAP) videoId = "6NsvJ9P7kSU";
+            if (config?.slop_mode === SlopMode.CUSTOM)
+                videoId = config.custom_video_id;
         }, 3e2);
 
         let i = $state(0);
@@ -133,8 +135,8 @@
         {/if}
     {:else}
         <iframe
-            width="160"
-            height="90"
+            width="200"
+            height="113"
             src="https://www.youtube.com/embed/{videoId}?autoplay=1&mute=1&rel=0&modestbranding&loop=1"
             title="YouTube video player"
             frameborder="0"

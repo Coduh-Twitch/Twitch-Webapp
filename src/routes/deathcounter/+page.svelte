@@ -60,10 +60,20 @@
         ).json();
     }
 
+    async function setVideoId(id: string): Promise<void> {
+        const res = await (
+            await fetch(`/api/bot/config/videoid/${id}`, {
+                method: "POST",
+            })
+        ).json();
+    }
+
     let config: DBAppConfig | null = $state(null);
+    let videoId: string = $state("");
 
     onMount(async () => {
         config = await getAppConfig();
+        if (config?.custom_video_id) videoId = config.custom_video_id;
 
         setInterval(async () => {
             config = await getAppConfig();
@@ -183,6 +193,14 @@
                     onclick={async () => await setSlopMode(SlopMode.SOAP)}
                 />
                 <Button
+                    label="Custom"
+                    type={config.slop_mode === SlopMode.CUSTOM
+                        ? "success"
+                        : "secondary"}
+                    size="normal"
+                    onclick={async () => await setSlopMode(SlopMode.CUSTOM)}
+                />
+                <Button
                     label="None (Hide Slop)"
                     type={config.slop_mode === SlopMode.NONE
                         ? "success"
@@ -191,6 +209,46 @@
                     onclick={async () => await setSlopMode(SlopMode.NONE)}
                 />
             </Row>
+            {#if config.slop_mode === SlopMode.CUSTOM}
+                <Row justifyContent="center" flexWrap>
+                    <input
+                        type="text"
+                        bind:value={videoId}
+                        placeholder="Enter YouTube Video ID..."
+                    />
+                    <Button
+                        label="Set Video ID"
+                        type={videoId !== "" &&
+                        videoId !== config.custom_video_id
+                            ? "success"
+                            : "secondary"}
+                        size="normal"
+                        onclick={async () => {
+                            if (
+                                videoId !== "" &&
+                                videoId !== config?.custom_video_id
+                            ) {
+                                await setVideoId(videoId);
+                                videoId = "";
+                            }
+                        }}
+                    />
+                </Row>
+                {#if videoId !== ""}
+                    <Row justifyContent="center" flexWrap>
+                        <iframe
+                            width="190"
+                            height="160"
+                            src="https://www.youtube.com/embed/{videoId}?autoplay=1&mute=1&rel=0&modestbranding&loop=1"
+                            title="YouTube video player"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allowfullscreen
+                        ></iframe>
+                    </Row>
+                {/if}
+            {/if}
         {/if}
     {/if}
 </Column>
