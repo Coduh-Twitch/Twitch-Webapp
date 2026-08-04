@@ -8,7 +8,7 @@ export const GET = async ({ cookies }): Promise<Response> => {
   console.log("TOKEN COOKIE", token);
 
   let rewards = await getCustomRewards(token);
-  console.log("REWARDS", rewards);
+  // console.log("REWARDS", rewards);
 
   return json(
     apiResponse<TwitchCustomReward[]>(
