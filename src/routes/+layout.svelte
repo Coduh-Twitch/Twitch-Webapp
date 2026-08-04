@@ -37,6 +37,11 @@
 
     let nav = $state([
         {
+            label: "Leaderboard",
+            pathname: "/leaderboard",
+            symbol: "license",
+        },
+        {
             label: "Commands",
             pathname: "/commands",
             symbol: "code_xml",
