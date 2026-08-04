@@ -33,6 +33,14 @@ export interface DBAppConfig {
   slop_mode: SlopMode;
 }
 
+export interface DBLeaderboardMember {
+  _id: string;
+  twitchId: string;
+  avatar_url: string;
+  username: string;
+  points: number;
+}
+
 export interface DBSession {
   id?: string;
   user_id: string;
