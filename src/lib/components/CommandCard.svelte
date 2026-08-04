@@ -109,7 +109,7 @@
             {/if}
             <Text weight="bold"
                 >!{command.name}{command.args
-                    ?.map((a) => ` {${a.name}}`)
+                    ?.map((a) => ` {${a.required ? "*" : "?"}${a.name}}`)
                     .join("")}</Text
             >
 
@@ -155,7 +155,9 @@
             <Text weight="bold"
                 >!{command?.name}
                 {subcommand.name}
-                {subcommand.args?.map((a) => ` {${a.name}}`).join("")}</Text
+                {subcommand.args
+                    ?.map((a) => ` {${a.required ? "*" : "?"}${a.name}}`)
+                    .join("")}</Text
             >
         {/if}
         {#if customCommand}
