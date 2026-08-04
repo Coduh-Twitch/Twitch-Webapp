@@ -51,9 +51,11 @@
 
     onMount(async () => {
         rewards = await fetchRewards();
+        // console.log(rewards);
 
         setInterval(async () => {
             rewards = await fetchRewards();
+            // console.log(rewards);
         }, 10e3);
     });
 </script>

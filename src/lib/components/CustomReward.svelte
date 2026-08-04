@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { TwitchCustomReward } from "$lib/types";
+    import type { ApiResponse, TwitchCustomReward } from "$lib/types";
     import { Column, Row, Symbol, Text } from "duckylib";
 
     interface CustomRewardProps {
@@ -13,12 +13,22 @@
     async function deleteReward(): Promise<boolean> {
         return false;
     }
+
+    async function testReward(id: string): Promise<boolean> {
+        let res: ApiResponse<any> = await (
+            await fetch(`/api/soundalerts/test/${id}`, { method: "POST" })
+        ).json();
+        console.log("TEST", res);
+        return res.data ? true : false;
+    }
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
+    title="Click to Test..."
+    style:cursor="pointer"
     style:background-color={reward.background_color}
     style:filter={reward.is_enabled ? "none" : "grayscale()"}
     class="reward"
@@ -27,6 +37,11 @@
     }}
     onmouseleave={() => {
         showButtons = false;
+    }}
+    onclick={async () => {
+        (await testReward(reward.id))
+            ? alert(`Running Alert "${reward.title}"...`)
+            : alert(`Failed to test alert "${reward.title}"`);
     }}
 >
     <div
