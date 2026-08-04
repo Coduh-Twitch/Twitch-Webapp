@@ -5,7 +5,7 @@ import { createAppConfig, getAppConfig } from "$lib/server/db/appConfig";
 import { getSession } from "$lib/server/db/sessions";
 import { getModeratedChannels, getUserFromToken } from "$lib/twitch";
 import type { Handle } from "@sveltejs/kit";
-import { setUserData } from "duckylib";
+import { getUserData, setUserData } from "duckylib";
 
 export const handle: Handle = async ({ event, resolve }) => {
   let appState = getAppConfig();
@@ -35,30 +35,31 @@ export const handle: Handle = async ({ event, resolve }) => {
           event.cookies.set("token-r", session.refresh_token, { path: "/" });
       }
     }
-  } else if (event.cookies.get("token-0")) {
-    const tokenUser = await getUserFromToken(
-      event.cookies.get("token-0") || null,
-    );
-    if (!tokenUser) {
-      let rt = event.cookies.get("token-r");
-      if (rt) {
-        const refreshed = await refreshToken(rt);
-        if (refreshed) {
-          event.cookies.set("token-0", refreshed.access_token, { path: "/" });
-          if (refreshed.refresh_token)
-            event.cookies.set("token-r", refreshed.refresh_token, {
-              path: "/",
-            });
-        }
-      } else {
-        event.cookies.delete("token-0", { path: "/" });
-        try {
-          setUserData(null);
-          await refreshAll();
-        } catch (e) {}
-      }
-    }
   }
+  // else if (event.cookies.get("token-0")) {
+  //   const tokenUser = await getUserFromToken(
+  //     event.cookies.get("token-0") || null,
+  //   );
+  //   if (!tokenUser) {
+  //     let rt = event.cookies.get("token-r");
+  //     if (rt) {
+  //       const refreshed = await refreshToken(rt);
+  //       if (refreshed) {
+  //         event.cookies.set("token-0", refreshed.access_token, { path: "/" });
+  //         if (refreshed.refresh_token)
+  //           event.cookies.set("token-r", refreshed.refresh_token, {
+  //             path: "/",
+  //           });
+  //       }
+  //     } else {
+  //       event.cookies.delete("token-0", { path: "/" });
+  //       try {
+  //         setUserData(null);
+  //         await refreshAll();
+  //       } catch (e) {}
+  //     }
+  //   }
+  // }
 
   const response = await resolve(event);
   return response;
