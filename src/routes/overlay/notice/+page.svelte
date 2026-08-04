@@ -47,16 +47,6 @@
             notice = await fetchNotice();
 
             spoofifyConfig = await fetchSpoofifyConfig();
-
-            // if(notice.visible && !expirationTimeout) {
-            //     expirationTimeout = setTimeout(() => {
-
-            //     },30e3)
-            // }
-            // if(!notice.visible && expirationTimeout) {
-            //     clearTimeout(expirationTimeout);
-            //     expirationTimeout = null;
-            // } 
         }, 1e3);
     });
 
@@ -66,26 +56,36 @@
         visible: false,
     });
     let spoofifyConfig: typeof defaultConfig = $state(defaultConfig);
-    
 </script>
 
 {#if notice.label !== ""}
-    <div class="notice dark {notice.visible ? 'visible' : 'hidden'}" style={`
+    <div
+        class="notice dark {notice.visible ? 'visible' : 'hidden'}"
+        style={`
         background-color: ${spoofifyConfig?.color_1}df;
         color: ${spoofifyConfig?.text_color || "white"};
         border-radius: ${spoofifyConfig.border_radius}px;
         border: ${spoofifyConfig.stroke_width / 2}px solid ${spoofifyConfig.stroke_color};
         word-break: break-all;
-        
 
-    `}>
-            <Symbol name="swords" inheritColor={true} sizePx={24} />
-            
-            <Column widthPx="fit" heightPx="fit" gapEm={0.1} alignItems="flex-start">
-                <Text inheritColor={true} sizeEm={0.6} weight="semibold">Message from Mods</Text
+
+    `}
+    >
+        <Symbol name="swords" inheritColor={true} sizePx={24} />
+
+        <Column
+            widthPx="fit"
+            heightPx="fit"
+            gapEm={0.1}
+            alignItems="flex-start"
+        >
+            <Text inheritColor={true} sizeEm={0.6} weight="semibold"
+                >Message from Mods</Text
             >
-            <Text inheritColor={true} sizeEm={1} weight="bold" maxLines={1}>{notice.label}</Text>
-            </Column>
+            <Text inheritColor={true} sizeEm={1} weight="bold" maxLines={1}
+                >{notice.label}</Text
+            >
+        </Column>
         <!-- <div
             class="duration"
             style="color: {spoofifyConfig?.text_color || "white"};"
@@ -120,10 +120,13 @@
     }
 
     @keyframes flashToSolid {
-        0%,50%,100% {
+        0%,
+        50%,
+        100% {
             opacity: 1;
         }
-        25%,75% {
+        25%,
+        75% {
             opacity: 0;
         }
     }
