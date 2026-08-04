@@ -42,6 +42,11 @@
             symbol: "code_xml",
         },
         {
+            label: "Game Queue",
+            pathname: "/gamequeue",
+            symbol: "stadia_controller",
+        },
+        {
             label: "Documentation",
             symbol: "book",
             pathname: "https://docs.ducky.wiki/coduh/twitch_guide",

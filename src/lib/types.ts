@@ -111,6 +111,34 @@ export interface DBAmazonProduct {
   categories: string[];
 }
 
+export enum DBQueueRoles {
+  MOD,
+  VIP,
+  SUBSCRIBER,
+  DEFAULT,
+}
+
+export interface DBQueueMember {
+  primaryId: string;
+  id: string;
+  queueId: string;
+  role: DBQueueRoles;
+  avatar_url: string;
+  username: string;
+  position: number;
+  joined_at: number;
+  bumped: boolean;
+}
+
+export interface DBGameQueue {
+  id: string;
+  game: string;
+  createdByUserId: string;
+  maximumRosterSize: number;
+  membersPerRound: number;
+  members: DBQueueMember[];
+}
+
 export enum TTSVoices {
   CHRISTOPHER = "en-US-ChristopherNeural",
   ARIA = "en-US-AriaNeural",
@@ -336,6 +364,7 @@ export interface Packets {
   isActive: { active: boolean };
   chat: ChatPacket;
   chatclear: {};
+  deleteMessage: { id: string };
 }
 
 export type Packet<T = keyof Packets> = {
