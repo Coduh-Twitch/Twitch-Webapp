@@ -52,3 +52,12 @@ export const channel_badges = sqliteTable("channel_badges", {
   set_id: text("set_id").notNull(),
   url: text("url").notNull(),
 });
+
+export const guessed_words = sqliteTable("guessed_words", {
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  config_id: text("config_id").notNull(),
+  word: text("word").notNull(),
+});

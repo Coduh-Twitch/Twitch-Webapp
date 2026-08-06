@@ -21,7 +21,7 @@ export enum SlopMode {
 }
 
 export interface DBAppConfig {
-  id: string;
+  id?: string;
   custom_video_id: string;
   death_count: number;
   stuck_count: number;

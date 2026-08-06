@@ -21,18 +21,18 @@
         show_album: true,
     };
 
-    async function fetchTimer(): Promise<DBTimer> {
-        let res: ApiResponse<DBTimer> = await (
-            await fetch(`/api/timer`)
-        ).json();
-        return res.data;
-    }
-
     async function fetchSpoofifyConfig(): Promise<typeof defaultConfig> {
         let res: ApiResponse<any | null> = await (
             await fetch(`/api/spoofify/config`)
         ).json();
         return res.data || defaultConfig;
+    }
+
+    async function fetchTimer(): Promise<DBTimer> {
+        let res: ApiResponse<DBTimer> = await (
+            await fetch(`/api/timer`)
+        ).json();
+        return res.data;
     }
 
     // let showTimeAnyway = $state(false);
@@ -55,7 +55,7 @@
                     `${timer.seconds >= 86400 ? "DD:" : ""}${timer.seconds >= 3600 ? "HH:" : ""}${timer.seconds >= 60 ? "mm:" : "[00:]"}ss`,
                 );
 
-        spoofifyConfig = await fetchSpoofifyConfig();
+            spoofifyConfig = await fetchSpoofifyConfig();
         }, 5e2);
 
         // setInterval(() => {
@@ -71,15 +71,16 @@
         seconds: 0,
         started_at: new Date(),
         visible: false,
-        show_label: false
+        show_label: false,
     });
     let formattedDuration: string = $state("00:00");
     let spoofifyConfig: typeof defaultConfig = $state(defaultConfig);
-    
 </script>
 
 {#if timer.label !== ""}
-    <div class="timer dark {timer.visible ? 'visible' : 'hidden'}" style={`
+    <div
+        class="timer dark {timer.visible ? 'visible' : 'hidden'}"
+        style={`
         background-color: ${spoofifyConfig?.color_1}df;
         color: ${spoofifyConfig?.text_color || "white"};
         border-radius: ${spoofifyConfig.border_radius}px;
@@ -87,24 +88,37 @@
         word-break: break-all;
         justify-content: ${timer.show_label ? "space-between" : "center"};
 
-    `}>
-        <div class="label" style="display: {timer.show_label ? "flex" : "none"};">
-            <Text inheritColor={true} sizeEm={1.33} weight="bolder" maxLines={1}>{timer.label}</Text>
+    `}
+    >
+        <div
+            class="label"
+            style="display: {timer.show_label ? 'flex' : 'none'};"
+        >
+            <Text inheritColor={true} sizeEm={1.33} weight="bolder" maxLines={1}
+                >{timer.label}</Text
+            >
         </div>
         <div
-            class="duration{timer.paused ? " pausing" : ""}"
-            style="color: {timer.paused ? "var(--red)" : timer.seconds === 0
-                ? spoofifyConfig?.text_color || "white"
-                : timer.seconds > 30
-                  ? '#37aac6'
-                  : 'var(--yellow)'};"
+            class="duration{timer.paused ? ' pausing' : ''}"
+            style="color: {timer.paused
+                ? 'var(--red)'
+                : timer.seconds === 0
+                  ? spoofifyConfig?.text_color || 'white'
+                  : timer.seconds > 30
+                    ? '#37aac6'
+                    : 'var(--yellow)'};"
         >
             <Row widthPx="fit" heightPx="fit" gapEm={0.33}>
-            {#if timer.paused}
-                <Symbol name="pause" inheritColor={true} sizePx={32} />
-            {/if}
-                <Text inheritColor={true} sizeEm={1.66} weight="boldest" classList={timer.paused ? ["red"] : []}>{formattedDuration}</Text
-            >
+                {#if timer.paused}
+                    <Symbol name="pause" inheritColor={true} sizePx={32} />
+                {/if}
+                <Text
+                    inheritColor={true}
+                    sizeEm={1.66}
+                    weight="boldest"
+                    classList={timer.paused ? ["red"] : []}
+                    >{formattedDuration}</Text
+                >
             </Row>
         </div>
     </div>
@@ -134,10 +148,13 @@
     }
 
     @keyframes flashToSolid {
-        0%,50%,100% {
+        0%,
+        50%,
+        100% {
             opacity: 1;
         }
-        25%,75% {
+        25%,
+        75% {
             opacity: 0;
         }
     }
@@ -147,7 +164,7 @@
         display: flex;
         padding: 0.66em 3em 0.66em 1.66em;
         align-items: center;
-        
+
         gap: 2em;
     }
 

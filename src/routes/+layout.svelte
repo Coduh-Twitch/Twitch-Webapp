@@ -89,6 +89,9 @@
 
 {#if (page.url.pathname as string).startsWith("/overlay")}
     {@render children()}
+
+    <style>
+    </style>
 {:else}
     <Website options={{ theme: "dark" }}>
         <Header
@@ -127,6 +130,11 @@
 {/if}
 
 <style>
+    :global(body) {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
     div {
         height: 100%;
     }

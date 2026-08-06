@@ -12,4 +12,5 @@ export const AppConfig = {
     "clips:edit",
     "user:read:moderated_channels",
   ],
+  word_list_bin_id: "XjEbxLQL",
 };
