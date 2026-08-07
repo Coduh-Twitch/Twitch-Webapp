@@ -32,7 +32,13 @@
                         await (
                             await fetch(
                                 `/api/bot/users/${message.userInfo.userId}/addWordScore`,
-                                { method: "POST" },
+                                {
+                                    method: "POST",
+                                    body: JSON.stringify({
+                                        word: currentWord,
+                                        revealed_word: revealedPart,
+                                    }),
+                                },
                             )
                         ).json();
                         guesserObject =
