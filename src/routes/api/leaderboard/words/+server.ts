@@ -14,7 +14,7 @@ export const GET = async ({ fetch, url }) => {
       },
     )
   ).json();
-  if (url.searchParams.has("slice"))
-    lb = lb.slice(0, Number(url.searchParams.get("slice")));
+
+  lb = lb.slice(0, 3);
   return json(apiResponse(lb || []));
 };
