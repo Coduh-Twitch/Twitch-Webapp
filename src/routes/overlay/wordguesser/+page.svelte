@@ -3,8 +3,16 @@
     import { page } from "$app/state";
     import { PUBLIC_CHATBOT_SOCKET_URL } from "$env/static/public";
     import { AppConfig } from "$lib/config";
-    import type { ApiResponse, ChatPacket, Packet } from "$lib/types";
-    import { Column, Heading, Row } from "duckylib";
+    import type {
+        ApiResponse,
+        ChatPacket,
+        DBAmazonProduct,
+        DBAppConfig,
+        DBLeaderboardMember,
+        DBWordGame,
+        Packet,
+    } from "$lib/types";
+    import { Column, Heading, LoginButton, Row } from "duckylib";
     import { onDestroy, onMount } from "svelte";
 
     function initSocket() {
@@ -12,48 +20,59 @@
 
         socket.onopen = async () => {
             console.log(`Socket Connected`);
+            if (socket)
+                socket.send(
+                    JSON.stringify({
+                        id: 0,
+                        command: "check",
+                        data: {
+                            id: navigator.userAgent.split(" ")[0],
+                            agent: navigator.userAgent,
+                        },
+                    }),
+                );
         };
 
         socket.onmessage = async (ev) => {
             try {
                 let packet: Packet = JSON.parse(ev.data);
 
-                if (packet.command === "chat") {
-                    let message = packet.data as ChatPacket;
-                    console.log(`chat from ${message.source}`, message.content);
-                    let word = message.content
-                        .split(" ")[0]
-                        .trim()
-                        .toLowerCase();
-                    console.log("GUESS", `${word}/${currentWord}`);
-                    if (word === currentWord && !guessed) {
-                        guessed = true;
-                        guesser = message.userInfo.display_name;
-                        await (
-                            await fetch(
-                                `/api/bot/users/${message.userInfo.userId}/addWordScore`,
-                                {
-                                    method: "POST",
-                                    body: JSON.stringify({
-                                        word: currentWord,
-                                        revealed_word: revealedPart,
-                                    }),
-                                },
-                            )
-                        ).json();
-                        guesserObject =
-                            (
-                                await (
-                                    await fetch(
-                                        `/api/bot/users/${message.userInfo.userId}`,
-                                    )
-                                ).json()
-                            )?.data || null;
+                if (
+                    (packet.command === "check" ||
+                        packet.command === "heartbeat") &&
+                    !game
+                ) {
+                    socket?.send(
+                        JSON.stringify({
+                            id: 0,
+                            command: "wordGameConnection",
+                            data: { binId: AppConfig.word_list_bin_id },
+                        }),
+                    );
+                }
 
-                        console.log("GUESSER", guesserObject);
-
-                        endGame(null);
+                if (packet.command === "wordGameState" && !gameEnded) {
+                    console.log("state received");
+                    game = packet.data.game;
+                    if (!showingResults) {
+                        gameSecondsElapsed = Math.floor(
+                            (Date.now() - (game as DBWordGame).started_at) /
+                                1000,
+                        );
+                        console.log("SECONDS", gameSecondsElapsed);
+                        updateGameClock();
                     }
+                    console.log("STATE", packet.data.game);
+                }
+
+                if (packet.command === "wordGameEnded" && !gameEnded) {
+                    gameEnded = true;
+                    game = packet.data.game;
+                    winnerWordGuesses = packet.data.winner_total_guesses || 0;
+                    guessed = game?.guessed ? true : false;
+
+                    guesser = game?.guesser_username || "";
+                    await endGame(null);
                 }
             } catch (e) {
                 console.log(`Failed to parse packet`, ev.data);
@@ -62,6 +81,9 @@
 
         socket.onclose = async () => {
             socket = null;
+            setTimeout(() => {
+                if (!socket) initSocket();
+            }, 1000);
             console.log(`Socket Connection Lost`);
         };
     }
@@ -94,40 +116,52 @@
         return res.data || [];
     }
 
-    async function fetchRandomWord(): Promise<string> {
-        const binId = AppConfig.word_list_bin_id;
-        const str = await (await fetch(`/api/bot/pastebin/${binId}`)).text();
-        const words = str
-            .trim()
-            .split(",")
-            .map((s) => s.trim().toLowerCase())
-            .filter((w) => !guessedWords.includes(w));
+    async function fetchTopPlayers(): Promise<DBLeaderboardMember[]> {
+        const res: ApiResponse<DBLeaderboardMember[]> = await (
+            await fetch(`/api/leaderboard/words?slice=3`)
+        ).json();
+        return res.data || [];
+    }
 
-        const random = Math.floor(Math.random() * words.length);
-        const word = words[random] || words[random + 1] || words[0];
+    async function fetchGameStart(): Promise<DBAppConfig> {
+        let res: ApiResponse<DBAppConfig> = await (
+            await fetch(`/api/bot/words/startGame`, { method: "POST" })
+        ).json();
+        console.log("GS", res);
+        console.log("GS", res.data);
 
-        return word;
+        return res.data;
+    }
+
+    async function fetchGameEnd(): Promise<DBAppConfig> {
+        let res: ApiResponse<DBAppConfig> = await (
+            await fetch(`/api/bot/words/endGame`, { method: "POST" })
+        ).json();
+        console.log("GE", res.data);
+
+        return res.data;
     }
 
     onMount(() => {
+        console.log("AGENT", navigator.userAgent);
         fetchSpoofifyConfig().then((c) => {
             spoofifyConfig = c;
         });
         fetchGuessedWords().then((w) => {
             guessedWords = w;
         });
+        // fetchTopPlayers().then((t) => {
+        //     topUsers = t;
+        //     showingResults = true;
+        //     showingLeaderboard = true;
+        // });
 
-        startGame().then((g) => {
-            console.log(
-                "Starting Game Loop...",
-                page.url.searchParams.get("rl"),
-            );
-        });
-
-        initSocket();
+        if (!socket && navigator.userAgent.includes("OBS")) {
+            initSocket();
+        }
 
         setInterval(async () => {
-            if (!socket) {
+            if (!socket && navigator.userAgent.includes("OBS")) {
                 initSocket();
             }
             spoofifyConfig = await fetchSpoofifyConfig();
@@ -145,26 +179,28 @@
         if (socket) {
             socket.close();
             socket = null;
+            setTimeout(() => {
+                if (!socket) initSocket();
+            }, 1000);
             console.log(`Socket Connection Closed`);
             return;
         }
     });
 
-    let firstHintSeconds = 30;
-    let subsequentHintSeconds = 20;
     let showResultsSeconds = 10;
-
-    function addHint() {
-        revealedPart += currentWord.slice(revealedPart.length).charAt(0);
-        hiddenLetters -= 1;
-    }
+    let showLeaderboardSeconds = 10;
 
     function updateGameClock() {
         if (!guessed) {
-            gameSecondsElapsed += 1;
+            let gameSeconds = gameSecondsElapsed;
+            let minutes = Math.floor(gameSecondsElapsed / 60);
+            // gameSecondsElapsed += 1;
             if (gameSecondsElapsed === 60) {
                 gameMinutes += 1;
                 gameSecondsElapsed = 0;
+            } else if (gameSecondsElapsed > 60) {
+                gameMinutes = minutes;
+                gameSecondsElapsed = gameSecondsElapsed - minutes * 60;
             }
         }
     }
@@ -179,74 +215,56 @@
         showingResults = true;
         revealWord = true;
 
+        topUsers = await fetchTopPlayers();
+
         setTimeout(async () => {
-            if (browser) window.location.reload();
+            showingLeaderboard = true;
+            if (game?.guessed) {
+                setTimeout(async () => {
+                    await fetchGameEnd();
+                    try {
+                        if (socket) socket.close();
+                        socket = null;
+                        window.location.reload();
+                    } catch (e) {
+                        if (browser) window.location.replace("/");
+                    }
+                }, showLeaderboardSeconds * 1000);
+            } else {
+                await fetchGameEnd();
+                try {
+                    if (socket) socket.close();
+                    socket = null;
+                    window.location.reload();
+                } catch (e) {
+                    if (browser) window.location.replace("/");
+                }
+            }
         }, showResultsSeconds * 1000);
-    }
-
-    async function startGame() {
-        hiddenLetters = 6;
-        currentWord = "";
-        revealedPart = "";
-        guesser = "";
-        guesserObject = null;
-        guessed = false;
-        showingResults = false;
-        revealWord = false;
-        gameSecondsElapsed = 0;
-        gameMinutes = 0;
-        gameTimerInterval = setInterval(() => {
-            updateGameClock();
-        }, 1000);
-
-        let endInterval = setTimeout(async () => {
-            await endGame(endInterval);
-        }, gameLength * 1000);
-
-        currentWord = await fetchRandomWord();
-        for (var i = 0; i < startingHint; i++) {
-            setTimeout(() => {
-                addHint();
-            }, 500 * i);
-        }
-        setTimeout(async () => {
-            if (!guessed) {
-                addHint();
-                setInterval(async () => {
-                    if (!guessed) {
-                        if (revealedPart.length < currentWord.length - 1)
-                            addHint();
-                    } else await endGame(endInterval);
-                }, subsequentHintSeconds * 1000);
-            } else await endGame(endInterval);
-        }, firstHintSeconds * 1000);
     }
 
     let spoofifyConfig: typeof defaultConfig = $state(defaultConfig);
     let socket: WebSocket | null = $state(null);
     let guessedWords: string[] = $state([]);
 
-    let gameLength = 300;
-    let startingHint = 2;
-    let currentWord = $state("");
-    let revealedPart = $state("");
-
-    let hiddenLetters = $state(6);
-
+    let showingLeaderboard = $state(false);
     let showingResults = $state(false);
     let guessed: boolean = $state(false);
     let guesser: string = $state("");
-    let guesserObject: any | null = $state(null);
+    let winnerWordGuesses = $state(0);
     let gameSecondsElapsed = $state(0);
     let gameMinutes = $state(0);
     let gameTimerInterval: NodeJS.Timeout | null = $state(null);
     let revealWord = $state(false);
-    let hintUpcoming = $state(false);
-    let hintInSeconds = $state(0);
+    let gameEnded = $state(false);
+    let topUsers: DBLeaderboardMember[] = $state([]);
+
+    let game: DBWordGame | null = $state(null);
 </script>
 
 <div
-    style:background-color={spoofifyConfig.color_1}
+    class="container"
+    style:background-color={spoofifyConfig.color_1.replace("d3", "b3")}
     style:color={spoofifyConfig.text_color}
 >
     <Column
@@ -267,10 +285,14 @@
                 style:text-shadow="0 2px 10px {spoofifyConfig.stroke_color}66, 0
                 0 20px {spoofifyConfig.stroke_color}66;"
             >
-                Guess the Word!
+                {showingLeaderboard ? "Top Guessers" : "Guess the Word!"}
             </h1>
-            {#if currentWord === "" || currentWord.startsWith("{")}
-                <h3>Loading...</h3>
+            {#if !game}
+                <h3>
+                    {navigator.userAgent.includes("OBS")
+                        ? "Finding a Word..."
+                        : "Overlay Running..."}
+                </h3>
             {:else}
                 {#if !showingResults}
                     <Row
@@ -280,12 +302,12 @@
                         justifyContent="center"
                         gapEm={2}
                     >
-                        {#each { length: revealedPart.split("").length } as _, i}
+                        {#each { length: game.revealed_part.split("").length } as _, i}
                             <p>
-                                {revealedPart.charAt(i)}
+                                {game?.revealed_part.charAt(i)}
                             </p>
                         {/each}
-                        {#each { length: hiddenLetters } as _, i}
+                        {#each { length: game.word.length - game.revealed_part.length } as _, i}
                             <p>_</p>
                         {/each}
                     </Row>
@@ -293,33 +315,91 @@
                         {`${gameMinutes}:${gameSecondsElapsed >= 10 ? gameSecondsElapsed : `0${gameSecondsElapsed}`}`}
                     </h3>
                 {:else}
-                    {#if !guessed}
-                        <h2
-                            style:color="#c94f3a"
-                            style:text-shadow={`0 2px 10px #561d13, 0 0 20px #561d13;`}
-                        >
-                            NOBODY GOT IT :(
-                        </h2>
-                        <h5>
-                            The word was "{revealWord ? currentWord : "______"}"
-                        </h5>
+                    {#if showingLeaderboard}
+                        <div class="lb">
+                            <div class="lb-list">
+                                {#each topUsers as user, i}
+                                    <div
+                                        class="lb-user"
+                                        data-place={i + 1}
+                                        style:background-color="var(--place-{i +
+                                            1})"
+                                    >
+                                        <Row
+                                            widthPx="fill"
+                                            heightPx="fit"
+                                            justifyContent="space-between"
+                                            alignItems="center"
+                                        >
+                                            <Row
+                                                widthPx="fit"
+                                                heightPx="fit"
+                                                justifyContent="space-between"
+                                                alignItems="center"
+                                                gapEm={1.66}
+                                            >
+                                                <div
+                                                    class="place-marker"
+                                                    data-place={i + 1}
+                                                    style:background-color="var(--place-{i +
+                                                        1})"
+                                                >
+                                                    <p>
+                                                        {i + 1 === 1
+                                                            ? "🏆"
+                                                            : i + 1 === 2
+                                                              ? "🥈"
+                                                              : i + 1 === 3
+                                                                ? "🥉"
+                                                                : i + 1}
+                                                    </p>
+                                                </div>
+                                                <!-- {/if} -->
+                                                <p class="username">
+                                                    {user.username}
+                                                </p>
+                                            </Row>
+                                            <p class="guesses">
+                                                x{user.word_guesses.toLocaleString()}
+                                                🔥
+                                            </p>
+                                        </Row>
+                                    </div>
+                                {/each}
+                            </div>
+                        </div>
                     {:else}
-                        <h2
-                            style:color="#63c94c"
-                            style:text-shadow={`0 2px 10px #2c5613, 0 0 20px #2c5613;`}
-                        >
-                            CORRECT!
-                        </h2>
-                        <h5>
-                            @{guesser} guessed "{revealWord
-                                ? currentWord
-                                : "______"}" correctly!
-                            <span style:text-transform="lowercase"
-                                >({#if gameMinutes > 0}{gameMinutes}m{/if}{gameSecondsElapsed}s{guesserObject
-                                    ? ` - x${(guesserObject.word_guesses || 0).toLocaleString()} 🔥`
-                                    : ""})</span
+                        {#if guesser === ""}
+                            <h2
+                                style:color="#c94f3a"
+                                style:text-shadow={`0 2px 10px #561d13, 0 0 20px #561d13;`}
                             >
-                        </h5>
+                                NOBODY GOT IT :(
+                            </h2>
+                            <h5>
+                                The word was "{revealWord
+                                    ? game.word
+                                    : "______"}"
+                            </h5>
+                        {:else}
+                            <h2
+                                style:color="#63c94c"
+                                style:text-shadow={`0 2px 10px #2c5613, 0 0 20px #2c5613;`}
+                            >
+                                CORRECT!
+                            </h2>
+                            <h5>
+                                @{guesser} guessed "{revealWord
+                                    ? game.word
+                                    : "______"}" correctly!
+                                <span style:text-transform="lowercase"
+                                    >({#if gameMinutes > 0}{gameMinutes}m{/if}{gameSecondsElapsed}s{winnerWordGuesses >
+                                    0
+                                        ? ` - x${((winnerWordGuesses || 0) + (navigator.userAgent.includes("OBS") ? 0 : 0)).toLocaleString()} 🔥`
+                                        : ""})</span
+                                >
+                            </h5>
+                        {/if}
                     {/if}
                 {/if}
             {/if}
@@ -328,11 +408,17 @@
 </div>
 
 <style>
-    div {
+    @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+    :root {
+        --place-1: #b27b23d3;
+        --place-2: #5e5c58d3;
+        --place-3: #5b2e17d3;
+    }
+    .container {
         width: 100vw;
         height: 100vh;
         text-transform: uppercase;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Inter", sans-serif;
     }
 
     #reveal {
@@ -346,23 +432,30 @@
     h1 {
         /*HEADING*/
         font-size: 5vw;
-        font-weight: 900;
+        font-weight: 900 !important;
+        margin: 0;
+        letter-spacing: 2px;
     }
 
     h3 {
         /*TIMER*/
         font-size: 3.5vw;
+        letter-spacing: 2px;
     }
 
     h2 {
         /*RESULTS HEADER*/
         font-size: 3vw;
+        letter-spacing: 2px;
     }
 
     h5 {
         /*RESULTS SUBHEADER*/
         font-size: 2.5vw;
-        letter-spacing: 1px;
+        letter-spacing: 2px;
+        word-break: keep-all;
+        text-wrap: wrap;
+        width: 70%;
     }
 
     @keyframes slideUp {
@@ -383,5 +476,101 @@
         font-size: 4vw;
         font-weight: 700;
         animation: slideUp 1s ease-out forwards;
+        letter-spacing: 2px;
+    }
+
+    code {
+        text-transform: none !important;
+        width: 100%;
+        height: fit-content;
+    }
+
+    .lb {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: fit-content !important;
+    }
+
+    .lb-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        width: 100%;
+        align-items: flex-start;
+        justify-content: flex-start;
+        height: fit-content;
+    }
+
+    .lb-user {
+        transition: 1s all;
+        width: 100% !important;
+        height: fit-content;
+        animation: slideUp 1s ease-out forwards !important;
+        animation-delay: 1s;
+        align-self: flex-start;
+        padding: 1em;
+        border-radius: 3vw;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        gap: 1em;
+    }
+
+    .lb-user p {
+        transition: all 1s;
+        transform: translateY(0px);
+        margin: 0;
+        animation: none !important;
+    }
+
+    #lb-heading {
+        margin: 0;
+        margin-top: 1em;
+    }
+
+    img {
+        height: 6vw;
+    }
+    p.username {
+        font-weight: 800 !important;
+        font-size: 3.5vw;
+    }
+
+    p.guesses {
+        text-transform: none !important;
+        font-size: 3.6vw;
+    }
+
+    .lb-user[data-place="1"] {
+        background-color: var(--place-1);
+    }
+    .lb-user[data-place="2"] {
+        background-color: var(--place-2);
+    }
+    .lb-user[data-place="3"] {
+        background-color: var(--place-3);
+    }
+
+    .place-marker {
+        height: 6vw;
+        aspect-ratio: 1/1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0.33em;
+        border-radius: 100px;
+        filter: brightness(1.5);
+    }
+
+    .place-marker p {
+        font-weight: 900 !important;
+        font-size: 3.5vw !important;
+        filter: brightness(0.7) !important;
     }
 </style>

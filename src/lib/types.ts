@@ -20,6 +20,16 @@ export enum SlopMode {
   CUSTOM,
 }
 
+export interface DBWordGame {
+  id: string;
+  word: string;
+  revealed_part: string;
+  guessed: number;
+  guesser_id: string;
+  guesser_username: string;
+  started_at: number;
+}
+
 export interface DBAppConfig {
   id?: string;
   custom_video_id: string;
@@ -31,6 +41,7 @@ export interface DBAppConfig {
   show_stuck_count: boolean;
   show_death_count: boolean;
   slop_mode: SlopMode;
+  word: string | null;
 }
 
 export interface DBLeaderboardMember {
@@ -39,6 +50,7 @@ export interface DBLeaderboardMember {
   avatar_url: string;
   username: string;
   points: number;
+  word_guesses: number;
 }
 
 export interface DBSession {
@@ -368,11 +380,18 @@ export interface Packets {
   heartbeat: {};
   ok: {};
   nope: {};
-  check: {};
+  check: { id?: string; agent?: string };
   isActive: { active: boolean };
   chat: ChatPacket;
   chatclear: {};
   deleteMessage: { id: string };
+  wordGameHint: { game: DBWordGame };
+  wordGameState: { game: DBWordGame };
+  wordGameEnded: {
+    game: DBWordGame;
+    winner_total_guesses: number;
+  };
+  wordGameConnection: { binId: string };
 }
 
 export type Packet<T = keyof Packets> = {

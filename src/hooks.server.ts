@@ -16,7 +16,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   // // event.locals.token = tokenCookie;
   // console.log("TOKEN", tokenCookie)
   //
-  //
+  // console.log(event.request.url);
   if (event.url.pathname.includes("api/tts/speak"))
     event.setHeaders({
       "Content-Type": "audio/mp3",
@@ -35,6 +35,16 @@ export const handle: Handle = async ({ event, resolve }) => {
           event.cookies.set("token-r", session.refresh_token, { path: "/" });
       }
     }
+  }
+  if (event.request.method === "OPTIONS") {
+    return new Response(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods":
+          "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
   }
   // else if (event.cookies.get("token-0")) {
   //   const tokenUser = await getUserFromToken(
@@ -62,5 +72,6 @@ export const handle: Handle = async ({ event, resolve }) => {
   // }
 
   const response = await resolve(event);
+  response.headers.append("Access-Control-Allow-Origin", "*");
   return response;
 };
