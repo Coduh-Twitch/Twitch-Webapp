@@ -11,6 +11,7 @@ export const AppConfig = {
     "channel:manage:redemptions",
     "clips:edit",
     "user:read:moderated_channels",
+    "moderator:read:chatters",
   ],
   word_list_bin_id: "XjEbxLQL",
 };

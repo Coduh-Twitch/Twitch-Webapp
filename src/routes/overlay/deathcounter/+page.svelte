@@ -18,6 +18,7 @@
     import catjam from "$lib/assets/emotes/catJAM.avif";
     import noooo from "$lib/assets/emotes/NOOOO.avif";
     import cookie from "$lib/assets/emotes/cookieOhYeah.gif";
+    import { page } from "$app/state";
 
     async function getAppConfig(): Promise<DBAppConfig | null> {
         const res: ApiResponse<DBAppConfig | null> = await (
@@ -51,6 +52,16 @@
 
     let mode: "stuck" | "deaths" | "none" = $state("deaths");
     let videoId = $state("a");
+
+    let label: string = $state(page.url.searchParams.get("label") || "Deaths:")
+    let fontSize: number = $state(parseFloat(page.url.searchParams?.get("fontSize") || "4") || 4);
+    let withEmote: boolean = $state((page.url.searchParams?.get("withEmote") || "true") === "true");
+    let withOutline: boolean = $state((page.url.searchParams?.get("withOutline") || "true") === "true");
+    let color: string = $state(page.url.searchParams.get("color") || "white")
+
+    $effect(() => {
+      if(color.length === 6 && !color.startsWith("#")) color = `#${color}`;
+    })
 
     onMount(async () => {
         config = await getAppConfig();
@@ -115,10 +126,12 @@
         : ' showing'}"
 >
     {#if !config?.slop_mode || ((config?.slop_mode || 0) as SlopMode) === SlopMode.NONE}
-        <img src={emote} />
+        {#if withEmote}
+            <img src={emote} style:height={`${fontSize}em`} />
+        {/if}
         {#if mode === "deaths"}
-            <h1>Deaths:</h1>
-            <h1>
+            <h1 style:font-size={`${fontSize}em`} style:color={color}>{label}</h1>
+            <h1 style:font-size={`${fontSize}em`} style:color={color}>
                 {(config?.death_count || 0) === 67
                     ? `67 :(`
                     : config?.death_count === 69
@@ -126,7 +139,7 @@
                       : (config?.death_count || 0).toLocaleString()}
             </h1>
         {:else if mode === "stuck"}
-            <h1>
+            <h1 style:font-size={`${fontSize}em`} style:color={color}>
                 Stuck: {config?.stuck_count || 0} Time{(config?.stuck_count ||
                     0) === 1
                     ? ""
@@ -149,8 +162,25 @@
     <h1>"coduh stinks" in chat</h1> -->
 </div>
 
+{#if withOutline}
+    <style>
+        h1 {
+            -webkit-text-stroke: 2.5px black;
+        }
+    </style>
+{/if}
+
 <style>
+    /*Default font*/
     @import url("https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&family=Do+Hyeon&display=swap");
+
+    /*BOTW special font*/
+    @font-face {
+        font-family: "triforce";
+        src: url("$lib/assets/font/breath_of_the_wild.otf") format("opentype");
+        font-weight: normal;
+        font-style: normal;
+    }
 
     @keyframes fadeIn {
         from {
@@ -182,26 +212,24 @@
         height: 100vh;
         display: flex;
         flex-direction: row;
-        align-items: flex-end;
+        align-items: center;
         justify-content: flex-start;
         gap: 0.5em;
     }
 
     img {
-        height: 4em;
+        /*height: 4em;*/
         aspect-ratio: 1/1;
     }
 
     h1 {
-        font-size: 4em;
-        margin-bottom: 0.15em;
+        letter-spacing: 0.1em;
+        /*margin-bottom: 0.15em;*/
         /*margin-left: 0.1em;*/
-        line-height: 0.8em;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        /*line-height: 1em;*/
+        font-family: "triforce", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         /*font-family: "Comic Relief";*/
-        font-weight: bold;
-        color: white;
-        -webkit-text-stroke: 2.5px black;
+        /*font-weight: bold;*/
         text-shadow: 2px 2px 5px black;
     }
 
