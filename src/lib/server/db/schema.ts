@@ -61,3 +61,45 @@ export const guessed_words = sqliteTable("guessed_words", {
   config_id: text("config_id").notNull(),
   word: text("word").notNull(),
 });
+
+
+export const routes = sqliteTable("routes", {
+  id: text("id")
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      category_id: text("category_id").notNull(),
+      category_name: text("category_name").notNull()
+})
+
+export const route_objectives = sqliteTable("route_objectives", {
+  id: text("id")
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      route_id: text("route_id")
+        .notNull(),
+      category_id: text("category_id").notNull(),
+      category_name: text("category_name").notNull(),
+  objective_id: text("objective_id").notNull(),
+      name: text("name").notNull(),
+      description: text("description").notNull(),
+      order: integer("order").notNull(),
+})
+
+export const route_progress = sqliteTable("route_progress", {
+  id: text("id")
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+      user_id: text("user_id")
+        .notNull(),
+      objective_id: text("objective_id")
+        .notNull(),
+      route_id: text("route_id")
+        .notNull(),
+  completed: integer("completed", { mode: "boolean" })
+        .notNull()
+        .default(false),
+      completed_at: integer("completed_at", { mode: "timestamp" })
+})

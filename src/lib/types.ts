@@ -1,3 +1,54 @@
+export interface Objective {
+  order: number;
+  name: string;
+  categoryName: string;
+  categoryId: string;
+  id: string;
+  description: string;
+}
+
+export interface Route {
+  [categoryId: string]: Objective[];
+}
+
+export interface DBObjective {
+  id: string;
+  route_id: string;
+  category_id: string;
+  category_name: string;
+  objective_id: string;
+  name: string;
+  description: string;
+  order: number;
+}
+
+export interface DBRouteProgress {
+  route: {
+    id: string;
+    category_id: string;
+    category_name: string;
+  };
+  progressPercentage: number;
+}
+
+export interface DBCompletableObjective {
+  id: string;
+  user_id: string;
+  objective_id: string;
+  route_id: string;
+  completed: boolean;
+  completed_at: number;
+}
+
+export interface DBRoute {
+  route: {
+    id: string;
+    category_id: string;
+    category_name: string;
+  };
+  objectives: DBObjective[];
+}
+
 // App API Types
 
 export interface ApiError {
