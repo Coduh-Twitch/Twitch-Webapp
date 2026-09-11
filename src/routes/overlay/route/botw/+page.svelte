@@ -5,6 +5,8 @@
     import { AppConfig } from "$lib/config";
     import type { ApiResponse, DBCompletableObjective, DBObjective, DBRoute, DBRouteProgress } from "$lib/types";
     import { onMount } from "svelte";
+    import fanfareSound from "$lib/assets/sound/zelda_getrareitem.flac"
+    import completeSound from "$lib/assets/sound/zelda_fanfare.flac"
 
     let route: DBRoute | null = $state(null);
     let progress: DBRouteProgress | null = $state(null);
@@ -54,6 +56,8 @@
     let lastCompleted: DBObjective | null = $state(null);
     let showingCompleted = $state(false);
 
+    let sound: HTMLAudioElement;
+
     function setMostRecents() {
       let nonCompleted = (route?.objectives || []).filter(o => !completed.some(c => c.objective_id === o.objective_id)).sort((a, b) => (routeCategories.find(c => c.id === a.category_id)?.order || 0) - (routeCategories.find(c => c.id === b.category_id)?.order || 0));
       let recent = nonCompleted[0];
@@ -73,6 +77,8 @@
 
       if(!showingCompleted && lastCompleted) {
         showingCompleted = true;
+        sound.src = (progress?.progressPercentage || 0) >= 100 ? completeSound : fanfareSound;
+        sound.play();
         setTimeout(() => {
           lastCompleted = null;
           setTimeout(() => {
@@ -100,6 +106,7 @@
 
     <div class="container">
 {#if route && progress}
+    <audio bind:this={sound}></audio>
     <!-- {#if showingCompleted} -->
         <div class="notif growing {showingCompleted ? "notif-in" : "notif-out"}" style:z-index="100">
             <h1 id="large">OBJECTIVE COMPLETE!</h1>
@@ -190,7 +197,7 @@
     }
 
     .description {
-        font-size: 1.1em;
+        font-size: 1.2em;
         text-shadow: 0px 0px 5px #4FC0FF;
         font-family: "Roboto", sans-serif;
         font-weight: 700;
@@ -204,7 +211,7 @@
     }
 
     p {
-        width: 80%;
+        width: 90%;
         font-size: 1.33em;
         color: var(--text);
         display: -webkit-box;
