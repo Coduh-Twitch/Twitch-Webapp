@@ -95,6 +95,7 @@
     let isPlaying = $state(true);
 
     onMount(async () => {
+      isObs = browser ? window.navigator.userAgent.includes("OBS") : true;
       if(browser) featuredObjectives = JSON.parse(window.localStorage.getItem("featured_objectives") || "[]");
       route = await fetchRoute();
       progress = await fetchProgress();
@@ -131,7 +132,7 @@
     let orbs: number = $state(0);
     let maxOrbs: number = $state(120);
 
-    let isObs = $state(window.navigator.userAgent.includes("OBS"));
+    let isObs = $state(true);
 </script>
 
     <div class="container" style:background-color={isObs ? "transparent" : "#000000d3"}>
