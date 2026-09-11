@@ -79,6 +79,11 @@
             pathname: "/deathcounter",
             symbol: "skull",
         });
+        nav.unshift({
+            label: "Game Routes",
+            pathname: "/route",
+            symbol: "route",
+        });
     }
 </script>
 

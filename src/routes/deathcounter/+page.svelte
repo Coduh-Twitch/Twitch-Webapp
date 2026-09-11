@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { SlopMode, type ApiResponse, type DBAppConfig } from "$lib/types";
+    import { SlopMode, type ApiResponse, type DBAppConfig, type DBCounter } from "$lib/types";
     import {
         Button,
         Column,
@@ -11,6 +11,7 @@
     } from "duckylib";
     import { onMount } from "svelte";
     import kiss from "$lib/assets/emotes/catKiss.avif";
+    import CounterItem from "$lib/components/CounterItem.svelte";
 
     async function getAppConfig(): Promise<DBAppConfig | null> {
         const res: ApiResponse<DBAppConfig | null> = await (
@@ -19,6 +20,12 @@
 
         return res.data;
     }
+
+    async function fetchCounter(id: string): Promise<DBCounter> {
+      const res: ApiResponse<DBCounter> = await (await fetch(`/api/counters/${id}`)).json();
+      return res.data;
+    }
+
 
     async function setCount(newCount: number): Promise<void> {
         const res = await (
@@ -68,15 +75,18 @@
         ).json();
     }
 
-    let config: DBAppConfig | null = $state(null);
+    // let config: DBAppConfig | null = $state(null);
+    let deathCounter: DBCounter | null = $state(null);
+    let stuckCounter: DBCounter | null = $state(null);
     let videoId: string = $state("");
 
     onMount(async () => {
-        config = await getAppConfig();
-        if (config?.custom_video_id) videoId = config.custom_video_id;
+        deathCounter = await fetchCounter("deaths");
+        stuckCounter = await fetchCounter("stuck");
 
         setInterval(async () => {
-            config = await getAppConfig();
+            deathCounter = await fetchCounter("deaths");
+            stuckCounter = await fetchCounter("stuck");
         }, 3e2);
     });
 </script>
@@ -97,10 +107,11 @@
         >
         <img src={kiss} />
 
-        {#if config !== null}
+        {#if deathCounter !== null}
             <Text>Current Death Counter</Text>
-            <Heading>{config.death_count.toLocaleString()}</Heading>
-            <Row justifyContent="center" flexWrap>
+            <Heading>{deathCounter.count.toLocaleString()}</Heading>
+            <CounterItem counter={deathCounter} />
+            <!-- <Row justifyContent="center" flexWrap>
                 <Button
                     label="+1"
                     type="success"
@@ -133,11 +144,14 @@
                     type={config.show_death_count ? "danger" : "success"}
                     onclick={async () => await toggleDeathVisibility()}
                 />
-            </Row>
-            <HorizontalRule />
-            <Text>Current Stuck Counter</Text>
-            <Heading>{config.stuck_count.toLocaleString()}</Heading>
-            <Row justifyContent="center" flexWrap>
+            </Row> -->
+            {#if stuckCounter !== null}
+                <HorizontalRule />
+                <Text>Current Stuck Counter</Text>
+                <Heading>{stuckCounter?.count.toLocaleString()}</Heading>
+                <CounterItem counter={stuckCounter} />
+            {/if}
+            <!-- <Row justifyContent="center" flexWrap>
                 <Button
                     label="+1"
                     type="success"
@@ -170,10 +184,9 @@
                     type={config.show_stuck_count ? "danger" : "success"}
                     onclick={async () => await toggleStuckVisibility()}
                 />
-            </Row>
-            <HorizontalRule />
+            </Row> -->
+            <!-- <HorizontalRule />
             <Text>Slop Mode</Text>
-            <!-- <Heading>{config.stuck_count.toLocaleString()}</Heading> -->
             <Row justifyContent="center" flexWrap>
                 <Button
                     label="Subway Surfers"
@@ -208,8 +221,8 @@
                     size="normal"
                     onclick={async () => await setSlopMode(SlopMode.NONE)}
                 />
-            </Row>
-            {#if config.slop_mode === SlopMode.CUSTOM}
+            </Row> -->
+            <!-- {#if config.slop_mode === SlopMode.CUSTOM}
                 <Row justifyContent="center" flexWrap>
                     <input
                         type="text"
@@ -248,7 +261,7 @@
                         ></iframe>
                     </Row>
                 {/if}
-            {/if}
+            {/if}-->
         {/if}
     {/if}
 </Column>

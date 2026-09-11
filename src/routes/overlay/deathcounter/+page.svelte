@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { SlopMode, type ApiResponse, type DBAppConfig } from "$lib/types";
+    import { SlopMode, type ApiResponse, type DBAppConfig, type DBCounter } from "$lib/types";
     import { Button, Column, getUserData, Heading, Text, Row } from "duckylib";
     import { onMount } from "svelte";
     import glorp from "$lib/assets/emotes/glorp.png";
@@ -28,6 +28,11 @@
         return res.data;
     }
 
+    async function fetchCounter(id: string): Promise<DBCounter> {
+      const res: ApiResponse<DBCounter> = await (await fetch(`/api/counters/${id}`)).json();
+      return res.data;
+    }
+
     let emotes = [
         glorp,
         dummy,
@@ -49,6 +54,7 @@
     );
 
     let config: DBAppConfig | null = $state(null);
+    let counter: DBCounter | null = $state(null);
 
     let mode: "stuck" | "deaths" | "none" = $state("deaths");
     let videoId = $state("a");
@@ -65,6 +71,7 @@
 
     onMount(async () => {
         config = await getAppConfig();
+        counter = await fetchCounter("deaths");
         mode = config?.show_death_count
             ? "deaths"
             : config?.show_stuck_count
@@ -73,6 +80,7 @@
 
         setInterval(async () => {
             config = await getAppConfig();
+            counter = await fetchCounter("deaths");
             if (
                 mode === "none" &&
                 (config?.show_death_count || config?.show_stuck_count)
@@ -132,19 +140,19 @@
         {#if mode === "deaths"}
             <h1 style:font-size={`${fontSize}em`} style:color={color}>{label}</h1>
             <h1 style:font-size={`${fontSize}em`} style:color={color}>
-                {(config?.death_count || 0) === 67
+                {(counter?.count || 0) === 67
                     ? `67 :(`
-                    : config?.death_count === 69
+                    : counter?.count === 69
                       ? "69 ;)"
-                      : (config?.death_count || 0).toLocaleString()}
+                      : (counter?.count || 0).toLocaleString()}
             </h1>
-        {:else if mode === "stuck"}
+        <!-- {:else if mode === "stuck"}
             <h1 style:font-size={`${fontSize}em`} style:color={color}>
                 Stuck: {config?.stuck_count || 0} Time{(config?.stuck_count ||
                     0) === 1
                     ? ""
                     : "s"}
-            </h1>
+            </h1> -->
         {/if}
     {:else}
         <iframe

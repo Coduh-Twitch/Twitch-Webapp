@@ -1,6 +1,7 @@
 <script lang="ts">
     import { PUBLIC_TWITCH_CHANNEL_ID } from "$env/static/public";
-    import type { DBRoute, ApiResponse, DBRouteProgress, DBCompletableObjective, DBObjective } from "$lib/types";
+    import CounterItem from "$lib/components/CounterItem.svelte";
+    import type { DBRoute, ApiResponse, DBRouteProgress, DBCompletableObjective, DBObjective, DBCounter } from "$lib/types";
     import { Button, Column, Heading } from "duckylib";
     import { onMount } from "svelte";
 
@@ -43,9 +44,18 @@
       await fetch(`/api/route/botw/progress/${PUBLIC_TWITCH_CHANNEL_ID}/objectives/${objectiveId}/uncomplete`, {method: "POST"})
     }
 
+    async function fetchCounter(id: string): Promise<DBCounter> {
+          const res: ApiResponse<DBCounter> = await (await fetch(`/api/counters/${id}`)).json();
+          return res.data;
+        }
+
     let currentCategory: string = $state("great-plateau");
     let currentObjective: DBObjective | null = $state(null);
     let nextObjective: DBObjective | null = $state(null);
+
+    let deathCounter: DBCounter | null = $state(null);
+    let korokCounter: DBCounter | null = $state(null);
+    let orbCounter: DBCounter | null = $state(null);
 
     function setMostRecents() {
       let nonCompleted = (route?.objectives || []).filter(o => !completed.some(c => c.objective_id === o.objective_id)).sort((a, b) => (routeCategories.find(c => c.id === a.category_id)?.order || 0) - (routeCategories.find(c => c.id === b.category_id)?.order || 0));
@@ -61,12 +71,18 @@
       route = await fetchRoute();
       progress = await fetchProgress();
       completed = await fetchCompleted();
+      deathCounter = await fetchCounter("deaths");
+      korokCounter = await fetchCounter("korok");
+      orbCounter = await fetchCounter("spirit-orbs");
       setMostRecents();
 
       setInterval(async () => {
         route = await fetchRoute();
         progress = await fetchProgress();
         completed = await fetchCompleted();
+        deathCounter = await fetchCounter("deaths");
+        korokCounter = await fetchCounter("korok");
+        orbCounter = await fetchCounter("spirit-orbs");
         setMostRecents();
       },5e2)
 
@@ -77,6 +93,15 @@
 
 <Column gapEm={2} heightPx="fit" alignItems="flex-start">
 {#if route && progress}
+    {#if deathCounter}
+        <CounterItem counter={deathCounter} />
+    {/if}
+    {#if korokCounter}
+        <CounterItem counter={korokCounter} />
+    {/if}
+    {#if orbCounter}
+        <CounterItem counter={orbCounter} />
+    {/if}
     <Heading weight="bold">{progress.progressPercentage}% Completed</Heading>
     <!-- <h5>Current: {currentObjective?.name} ({currentObjective?.category_id}/{currentObjective?.objective_id})</h5>
     {#if nextObjective}

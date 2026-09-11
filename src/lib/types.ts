@@ -49,6 +49,12 @@ export interface DBRoute {
   objectives: DBObjective[];
 }
 
+export interface DBCounter {
+  id: string;
+  label: string;
+  count: number;
+}
+
 // App API Types
 
 export interface ApiError {
