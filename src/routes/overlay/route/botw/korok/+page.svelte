@@ -135,7 +135,7 @@
     let isObs = $state(true);
 </script>
 
-<div class="container" style:background-color={isObs ? "transparent" : "#000000d3"}>
+<div class="container" style:background-color={isObs ? "transparent" : "#00FF00d3"}>
     {#if !isObs}
         <p>Korok seed tracker</p>
     {/if}

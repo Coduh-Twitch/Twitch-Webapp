@@ -135,7 +135,7 @@
     let isObs = $state(true);
 </script>
 
-<div class="container" style:background-color={isObs ? "transparent" : "#000000d3"}>
+<div class="container" style:background-color={isObs ? "transparent" : "#FF0000d3"}>
     {#if !isObs}
         <p>Divine beast tracker</p>
     {/if}
