@@ -126,7 +126,7 @@
           },isComplete ? 15e3 : 10e3);
         }
         setMostRecents();
-      },1e3)
+      },15e2)
     })
 
     let koroks: number = $state(0);
