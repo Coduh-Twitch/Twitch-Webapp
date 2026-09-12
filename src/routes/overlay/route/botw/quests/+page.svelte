@@ -3,8 +3,8 @@
     import { PUBLIC_TWITCH_CHANNEL_ID } from "$env/static/public";
     import questIcon from "$lib/assets/quest_icon.png";
     import { AppConfig } from "$lib/config";
-    import getItemSound from "$lib/assets/sound/zelda_getitem.flac";
-    import completedSound from "$lib/assets/sound/zelda_fanfare.flac";
+    import getItemSound from "$lib/assets/sound/zelda_battlecomplete.flac";
+    import completedSound from "$lib/assets/sound/zelda_battlecomplete.flac";
     import type { ApiResponse, DBCompletableObjective, DBCounter, DBObjective, DBRoute, DBRouteProgress } from "$lib/types";
     import { onMount } from "svelte";
 
@@ -30,7 +30,7 @@
     }
 
     async function fetchCounter(): Promise<DBCounter> {
-        const res: ApiResponse<DBCounter> = await (await fetch(`/api/counters/divine-beasts`)).json();
+        const res: ApiResponse<DBCounter> = await (await fetch(`/api/counters/side-quests`)).json();
         return res.data;
     }
 
@@ -113,10 +113,10 @@
         completed = await fetchCompleted();
         counter = await fetchCounter();
 
-        if(counter.count !== beasts) {
-          if((counter.count !== 0) && counter.count > beasts && !isPlaying) display = true;
-          beasts = counter.count;
-          let isComplete = counter.count === maxBeasts;
+        if(counter.count !== quests) {
+          if((counter.count !== 0) && counter.count > quests && !isPlaying) display = true;
+          quests = counter.count;
+          let isComplete = counter.count === maxQuests;
           if(display) {
             sound.src = isComplete ? completedSound : getItemSound;
             if(!isPlaying) sound.play();
@@ -129,15 +129,15 @@
       },15e2)
     })
 
-    let beasts: number = $state(0);
-    let maxBeasts: number = $state(4);
+    let quests: number = $state(0);
+    let maxQuests: number = $state(76);
 
     let isObs = $state(true);
 </script>
 
-<div class="container" style:background-color={isObs ? "transparent" : "#FF0000d3"}>
+<div class="container" style:background-color={isObs ? "transparent" : "#0e0e0ed3"}>
     {#if !isObs}
-        <p>Divine beast tracker</p>
+        <p>Side quest tracker</p>
     {/if}
 {#if route && progress && counter}
     <audio bind:this={sound} volume={0.5}></audio>
@@ -146,10 +146,10 @@
                 <div class="row">
                     <div class="row">
                         <img id="icon" src={questIcon} alt="">
-                        <h1>{beasts === maxBeasts ? "ALL DIVINE BEASTS FREED!" : "DIVINE BEAST FREED!"}</h1>
+                        <h1>{quests === maxQuests ? "ALL SIDE QUESTS COMPLETED!" : "SIDE QUEST COMPLETED!"}</h1>
                     </div>
                     <div class="row">
-                        <h3 class="objective">{counter.count} OF {maxBeasts}</h3>
+                        <h3 class="objective">{counter.count} OF {maxQuests}</h3>
                     </div>
                 </div>
             </div>

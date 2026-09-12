@@ -57,6 +57,7 @@
     let korokCounter: DBCounter | null = $state(null);
     let orbCounter: DBCounter | null = $state(null);
     let beastCounter: DBCounter | null = $state(null);
+    let questCounter: DBCounter | null = $state(null);
 
     function setMostRecents() {
       let nonCompleted = (route?.objectives || []).filter(o => !completed.some(c => c.objective_id === o.objective_id)).sort((a, b) => (routeCategories.find(c => c.id === a.category_id)?.order || 0) - (routeCategories.find(c => c.id === b.category_id)?.order || 0));
@@ -76,6 +77,7 @@
       korokCounter = await fetchCounter("korok");
       orbCounter = await fetchCounter("spirit-orbs");
       beastCounter = await fetchCounter("divine-beasts");
+      questCounter = await fetchCounter("side-quests");
       setMostRecents();
 
       setInterval(async () => {
@@ -86,6 +88,7 @@
         korokCounter = await fetchCounter("korok");
         orbCounter = await fetchCounter("spirit-orbs");
         beastCounter = await fetchCounter("divine-beasts");
+        questCounter = await fetchCounter("side-quests");
         setMostRecents();
       },5e2)
 
@@ -107,6 +110,9 @@
     {/if}
     {#if beastCounter}
         <CounterItem counter={beastCounter} />
+    {/if}
+    {#if questCounter}
+        <CounterItem counter={questCounter} />
     {/if}
     <Heading weight="bold">{progress.progressPercentage}% Completed</Heading>
     <!-- <h5>Current: {currentObjective?.name} ({currentObjective?.category_id}/{currentObjective?.objective_id})</h5>
