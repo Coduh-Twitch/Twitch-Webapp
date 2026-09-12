@@ -146,7 +146,7 @@
                 <div class="row">
                     <div class="row">
                         <img id="icon" src={questIcon} alt="">
-                        <h1>{beasts === maxBeasts ? "ALL DIVINE BEASTS DEFEATED!" : "DIVINE BEAST DEFEATED!"}</h1>
+                        <h1>{beasts === maxBeasts ? "ALL DIVINE BEASTS FREED!" : "DIVINE BEAST FREED!"}</h1>
                     </div>
                     <div class="row">
                         <h3 class="objective">{counter.count} OF {maxBeasts}</h3>
