@@ -191,7 +191,6 @@
     <div class="middle">
         <p class="heading"
             id="vs"
-            style={`background: linear-gradient(to right, #${score?.homeColor}, #${score?.awayColor}); background-clip: text;-webkit-background-clip: text;-webkit-text-fill-color: transparent;`}
         >{score?.homeTeam} vs {score?.awayTeam}</p>
         {#if displayMode === "clock" && score?.season !== EspnSeason.BASEBALL}
             {@const content = "GAME NOT STARTED"}
