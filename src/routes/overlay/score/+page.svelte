@@ -311,6 +311,10 @@
         font-size: var(--font-lg);
     }
 
+    #vs {
+      opacity: 0.7;
+    }
+
     .score {
         font-size: var(--font-xl);
 
