@@ -5,9 +5,10 @@
 
     interface CounterItemProps {
         counter: DBCounter;
+        withRename?: boolean;
     }
 
-    const { counter }: CounterItemProps = $props();
+    const { counter, withRename = false }: CounterItemProps = $props();
 
     async function incrementCounter(): Promise<void> {
       await fetch(`/api/counters/${counter.id}/increment`, {method: "POST"});
@@ -19,6 +20,10 @@
 
     async function resetCounter(): Promise<void> {
       await fetch(`/api/counters/${counter.id}/reset`, {method: "POST"});
+    }
+
+    async function renameCounter(name: string): Promise<void> {
+      await fetch(`/api/counters/${counter.id}/rename/${encodeURIComponent(name)}`, {method: "POST"});
     }
 
     async function deleteCounter(): Promise<void> {
@@ -51,10 +56,21 @@
                     await deleteCounter()
                 }}
             />
+            {#if withRename}
+                <Button
+                    label="Re-Label"
+                    type="primary"
+                    onclick={async () => {
+                        const name = prompt(`Enter the new name for the "${counter.id}" counter`, "Counter");
+
+                        if(name) await renameCounter(name);
+                    }}
+                />
+            {/if}
             <Column gapEm={0.1} alignItems="flex-start" widthPx="fit">
                 <Row>
                     <Text maxLines={1} weight="bold"
-                        >{counter.label.split(" ").slice(0, 15).join(" ")}...</Text
+                        >{counter.label.split(" ").slice(0, 15).join(" ")}</Text
                     >
                 </Row>
             </Column>
