@@ -55,6 +55,28 @@ export interface DBCounter {
   count: number;
 }
 
+
+export interface EspnResponse {
+  season: EspnSeason | null;
+  event: EspnSeasonEvent | null;
+  competition: EspnCompetition | null;
+  venue: EspnEventVenue | null;
+  muted: boolean;
+  emoji: string;
+  leagueReadable: string;
+  homeScore: number;
+  awayScore: number;
+  homeTeam: string;
+  awayTeam: string;
+  timeFormatted: string;
+  homeLogo: string;
+  awayLogo: string;
+  homeColor: string;
+  awayColor: string;
+  periodFormatted: string;
+  period: number;
+}
+
 // App API Types
 
 export interface ApiError {
@@ -519,4 +541,356 @@ export interface ChatPacket {
       isVip: boolean;
     };
   };
+}
+
+
+// Espn Fat ass chunk
+
+export enum EspnSeason {
+  HOCKEY = "hockey",
+  SOCCER = "soccer",
+  BASKETBALL = "basketball",
+  BASEBALL = "baseball",
+  FOOTBALL = "football",
+  NONE = "none",
+}
+
+export interface EspnEventList {
+  $meta: {
+    parameters: {
+      week: string[];
+      season: string[];
+      seasontypes: string[];
+    };
+  };
+  count: number;
+  pageIndex: number;
+  pageSize: number;
+  pageCount: number;
+  items: { $ref: string }[];
+}
+
+export interface EspnCompetition {
+  $ref: string;
+  id: string;
+  guid: string;
+  uid: string;
+  date: string;
+  attendance: number;
+  type: {
+    id: string;
+    text: string;
+    abbreviation: string;
+    slug: string;
+    type: string;
+  };
+  timeValid: boolean;
+  dateValid: boolean;
+  neutralSite: boolean;
+  divisionCompetition: boolean;
+  conferenceCompetition: boolean;
+  previewAvailable: boolean;
+  recapAvailable: boolean;
+  boxscoreAvailable: boolean;
+  lineupAvailable: boolean;
+  gamecastAvailable: boolean;
+  playByPlayAvailable: boolean;
+  conversationAvailable: boolean;
+  commentaryAvailable: boolean;
+  pickcenterAvailable: boolean;
+  summaryAvailable: boolean;
+  liveAvailable: boolean;
+  ticketsAvailable: boolean;
+  shotChartAvailable: boolean;
+  timeoutsAvailable: boolean;
+  possessionArrowAvailable: boolean;
+  onWatchESPN: boolean;
+  recent: boolean;
+  bracketAvailable: boolean;
+  wallclockAvailable: boolean;
+  highlightsAvailable: boolean;
+  gameSource: {
+    id: string;
+    description: string;
+    state: string;
+  };
+  boxscoreSource: {
+    id: string;
+    description: string;
+    state: string;
+  };
+  playByPlaySource: {
+    id: string;
+    description: string;
+    state: string;
+  };
+  linescoreSource: {
+    id: string;
+    description: string;
+    state: string;
+  };
+  statsSource: {
+    id: string;
+    description: string;
+    state: string;
+  };
+  venue: {
+    $ref: string;
+    id: string;
+    guid: string;
+    fullName: string;
+    address: {
+      city: string;
+      state: string;
+      zipCode: string;
+      country: string;
+    };
+    grass: boolean;
+    indoor: boolean;
+    images: {
+      href: string;
+      height: number;
+      width: number;
+      alt: string;
+      rel: string[];
+    }[];
+  };
+
+  competitors: {
+    $ref: string;
+    id: string;
+    uid: string;
+    type: string;
+    order: number;
+    homeAway: string;
+    team: { $ref: string };
+    score: { $ref: string };
+    record: { $ref: string };
+  }[];
+
+  notes: string[];
+  situation: { $ref: string };
+  odds: { $ref: string };
+  status: { $ref: string };
+  broadcasts: { $ref: string };
+  tickets: { $ref: string };
+
+  links: {
+    language: string;
+    rel: string[];
+    href: string;
+    text: string;
+    shortText: string;
+    isExternal: boolean;
+    isPremium: boolean;
+  }[];
+}
+
+export interface EspnCompetitionList {
+  $ref: string;
+  id: string;
+  uid: string;
+  date: string;
+  name: string;
+  shortName: string;
+  season: { $ref: string };
+  seasonType: { $ref: string };
+  week: { $ref: string };
+  timeValid: boolean;
+  competitions: EspnCompetition[];
+}
+
+export interface EspnCompetitor {
+  $ref: string;
+  id: string;
+  uid: string;
+  type: string;
+  order: number;
+  homeAway: string;
+  winner: boolean;
+  advance: boolean;
+}
+
+export interface EspnLineScore {
+  $ref: string;
+  value: number;
+  displayValue: string;
+  source: {
+    id: string;
+    description: string;
+  };
+}
+
+export interface EspnLineScoreList {
+  count: number;
+  pageIndex: number;
+  pageSize: number;
+  pageCount: number;
+  items: EspnLineScore[];
+}
+
+export interface EspnEventVenue {
+  $ref: string;
+  id: string;
+  guid: string;
+  fullName: string;
+  address: {
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  grass: boolean;
+  indoor: boolean;
+  images: {
+    href: string;
+    width: number;
+    height: number;
+    alt: string;
+    rel: string;
+  }[];
+}
+
+export interface EspnSeasonEvent {
+  $ref: string;
+  id: string;
+  uid: string;
+  date: string;
+  name: string;
+  shortName: string;
+  season: { $ref: string };
+  seasonType: { $ref: string };
+  week: { $ref: string };
+  timeValid: boolean;
+  competitions: {
+    $ref: string;
+    id: string;
+    guid: string;
+    uid: string;
+    date: string;
+    attendance: number;
+    type: {
+      id: string;
+      text: string;
+      abbreviation: string;
+      slug: string;
+      type: string;
+    };
+    timeValid: boolean;
+    dateValid: boolean;
+    neutralSite: boolean;
+    divisionCompetition: boolean;
+    conferenceCompetition: boolean;
+    previewAvailable: boolean;
+    recapAvailable: boolean;
+    boxscoreAvailable: boolean;
+    lineupAvailable: boolean;
+    gamecastAvailable: boolean;
+    playByPlayAvailable: boolean;
+    conversationAvailable: boolean;
+    commentaryAvailable: boolean;
+    pickcenterAvailable: boolean;
+    summaryAvailable: boolean;
+    liveAvailable: boolean;
+    ticketsAvailable: boolean;
+    shotChartAvailable: boolean;
+    timeoutsAvailable: boolean;
+    possessionArrowAvailable: boolean;
+    onWatchESPN: boolean;
+    recent: boolean;
+    bracketAvailable: boolean;
+    wallclockAvailable: boolean;
+    highlightsAvailable: boolean;
+    gameSource: { id: string; description: string; state: string };
+    boxscoreSource: { id: string; description: string; state: string };
+    playByPlaySource: { id: string; description: string; state: string };
+    linescoreSource: { id: string; description: string; state: string };
+    statsSource: { id: string; description: string; state: string };
+    venue: EspnEventVenue;
+    competitors: {
+      $ref: string;
+      id: string;
+      uid: string;
+      type: string;
+      order: number;
+      homeAway: string;
+      team: { $ref: string };
+      score: { $ref: string };
+      record: { $ref: string };
+    }[];
+    notes: any[];
+    situation: { $ref: string };
+    status: { $ref: string };
+    odds: { $ref: string };
+    broadcasts: { $ref: string };
+    tickets: { $ref: string };
+    links: {
+      language: string;
+      rel: string;
+      href: string;
+      text: string;
+      shortText: string;
+      isExternal: boolean;
+      isPremium: boolean;
+    }[];
+    predictor: { $ref: string };
+    powerIndexes: { $ref: string };
+    format: {
+      regulation: {
+        periods: number;
+        displayName: string;
+        slug: string;
+        clock: number;
+      };
+      overtime: {
+        periods: number;
+        displayName: string;
+        slug: string;
+        clock: number;
+      };
+      suddenDeath: { periods: number; clock: number };
+    };
+    relevancy: { $ref: string };
+    drives: { $ref: string };
+    hasDefensiveStats: boolean;
+  }[];
+  links: {
+    language: string;
+    rel: string;
+    href: string;
+    text: string;
+    shortText: string;
+    isExternal: boolean;
+    isPremium: boolean;
+  }[];
+  venues: { $ref: string }[];
+  league: { $ref: string };
+}
+
+export interface EspnOndayCalendar {
+  $ref: string;
+  type: string;
+  startDate: string;
+  endDate: string;
+  eventDate: {
+    type: "ondays";
+    dates: string[];
+  };
+  sections: {
+    label: string;
+    value: string;
+    startDate: string;
+    endDate: string;
+    entries: {
+      label: string;
+      alternateLabel: string;
+      detail: string;
+      value: string;
+      startDate: string;
+      endDate: string;
+      seasonType: {
+        $ref: string;
+      };
+    }[];
+  }[];
 }
