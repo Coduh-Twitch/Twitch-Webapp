@@ -150,10 +150,10 @@
 
 
 <div class="overlay {showOverlay ? "in" : "out"}">
-    <div class="home" style={`--home-color: ${`#${score?.homeColor}` || "var(--bg)"}`} style:width={overlayBias === "home" ? "100%" : "30%"}>
+    <div class="away" style={`--away-color: ${`#${score?.awayColor}` || "var(--bg)"}`} style:width={overlayBias === "away" ? "100%" : "30%"}>
         <!-- svelte-ignore a11y_missing_attribute -->
-        <img src={score?.homeLogo} class="icon" id="home-icon" style:scale={showOverlayText && overlayBias === "home" ? 1.1 : 0.95} />
-        {#if overlayBias === "home" && showOverlay}
+        <img src={score?.awayLogo} class="icon" id="away-icon" style:scale={showOverlayText && overlayBias === "away" ? 1.1 : 0.95} />
+        {#if overlayBias === "away" && showOverlay}
             <div class="overlaySection {showOverlayText ? "in" : "hide"}">
                 <h1 class="heading">{overlayHeading}</h1>
                 <p class="text">{overlayText}</p>
@@ -166,32 +166,34 @@
             <p class="text" style:text-align="center">{overlayText}</p>
         </div>
     {/if}
-    <div class="away" style={`--away-color: ${`#${score?.awayColor}` || "var(--bg)"}`} style:width={overlayBias === "away" ? "100%" : "30%"}>
-        {#if overlayBias === "away" && showOverlay}
+    <div class="home" style={`--home-color: ${`#${score?.homeColor}` || "var(--bg)"}`} style:width={overlayBias === "home" ? "100%" : "30%"}>
+        {#if overlayBias === "home" && showOverlay}
             <div class="overlaySection {showOverlayText ? "in" : "hide"}">
                 <h1 class="heading">{overlayHeading}</h1>
                 <p class="text">{overlayText}</p>
             </div>
         {/if}
         <!-- svelte-ignore a11y_missing_attribute -->
-        <img src={score?.awayLogo} class="icon" id="away-icon" style:scale={showOverlayText && overlayBias === "away" ? 1.1 : 0.95} />
+        <img src={score?.homeLogo} class="icon" id="home-icon" style:scale={showOverlayText && overlayBias === "home" ? 1.1 : 0.95} />
     </div>
+
 </div>
 <div class="container {score ? 'in' : 'out'}">
+
+
     <div
-        class="home"
-        style={`--home-color: ${`#${score?.homeColor}` || "var(--bg)"}`}
+        class="away"
+        style={`--away-color: ${`#${score?.awayColor}` || "var(--bg)"}`}
     >
         <!-- svelte-ignore a11y_missing_attribute -->
-        <img src={score?.homeLogo} class="icon" id="home-icon" />
-        <!-- <h1 class="heading" id="home-name">{@html score?.homeTeam.replace(" ", "<br>")}</h1> -->
-        <h1 class="score">{score?.homeScore}</h1>
+        <img src={score?.awayLogo} class="icon" id="away-icon" />
+        <h1 class="score">{score?.awayScore}</h1>
     </div>
 
     <div class="middle">
         <p class="heading"
             id="vs"
-        >{score?.homeTeam} vs {score?.awayTeam}</p>
+        >{score?.awayTeam} @ {score?.homeTeam}</p>
         {#if displayMode === "clock" && score?.season !== EspnSeason.BASEBALL}
             {@const content = "GAME NOT STARTED"}
                 {#if score?.period === 0}
@@ -213,20 +215,19 @@
     </div>
 
     <div
-        class="away"
-        style={`--away-color: ${`#${score?.awayColor}` || "var(--bg)"}`}
+        class="home"
+        style={`--home-color: ${`#${score?.homeColor}` || "var(--bg)"}`}
     >
-        <!-- <h1 class="heading" id="away-name">{@html score?.awayTeam.replace(" ", "<br>")}</h1> -->
-        <h1 class="score">{score?.awayScore}</h1>
+        <h1 class="score">{score?.homeScore}</h1>
         <!-- svelte-ignore a11y_missing_attribute -->
-        <img src={score?.awayLogo} class="icon" id="away-icon" />
+        <img src={score?.homeLogo} class="icon" id="home-icon" />
     </div>
 </div>
 
 <!-- <input type="text" name="heading" id="heading" bind:value={overlayHeading}>
 <input type="text" name="text" id="text" bind:value={overlayText}>
 <button onclick={() => {
-  displayOverlay("home", `Score!`, `${score?.homeTeam} scored!`)
+  displayOverlay("away", `Score!`, `${score?.homeTeam} scored!`)
 }}>{showOverlay ? "hide" : "show"} overlay</button>
 <select name="bias" id="bias" bind:value={overlayBias}>
     <option value="home">home</option>
@@ -322,12 +323,12 @@
     }
 
     .home .score {
-        text-align: left;
+        text-align: right;
         text-shadow: 0px 0px 50px var(--home-color);
     }
 
     .away .score {
-        text-align: right;
+        text-align: left;
         text-shadow: 0px 0px 50px var(--away-color);
     }
 
@@ -370,29 +371,29 @@
     }
 
     .home {
-        padding-left: 2em;
-        justify-content: flex-start;
+        padding-right: 2em;
+        justify-content: flex-end;
         background-image: linear-gradient(
-            to right,
+            to left,
             var(--home-color) -90%,
             var(--bg)
         );
         border: 5px solid var(--bg);
         box-sizing: border-box;
-        border-right: none;
+        border-left: none;
     }
 
     .away {
-        padding-right: 2em;
-        justify-content: flex-end;
+        padding-left: 2em;
+        justify-content: flex-start;
         background-image: linear-gradient(
-            to left,
+            to right,
             var(--away-color) -100%,
             var(--bg)
         );
         border: 5px solid var(--bg);
         box-sizing: border-box;
-        border-left: none;
+        border-right: none;
     }
 
     @keyframes fadeIn {
