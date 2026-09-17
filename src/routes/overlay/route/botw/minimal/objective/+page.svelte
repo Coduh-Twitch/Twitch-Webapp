@@ -3,6 +3,7 @@
     import { page } from "$app/state";
     import { PUBLIC_TWITCH_CHANNEL_ID } from "$env/static/public";
     import questIcon from "$lib/assets/quest_icon.png";
+    import QuestIcon from "$lib/components/QuestIcon.svelte";
     import { AppConfig } from "$lib/config";
     import type { ApiResponse, DBCompletableObjective, DBObjective, DBRoute, DBRouteProgress } from "$lib/types";
     import { onMount } from "svelte";
@@ -86,12 +87,14 @@
     let objective: string = $state(page.url.searchParams.get("objective") || "none");
     let description: string = $state(page.url.searchParams.get("description") || "none");
 
-    let completed = $state(page.url.searchParams.get("complete") === "true");
+    let completed = $state(page.url.searchParams.get("completed") === "true");
+    let failed = $state(!completed && page.url.searchParams.get("failed") === "true");
 
     onMount(async () => {
       objective = page.url.searchParams.get("objective") || "none";
       description = page.url.searchParams.get("description") || "none";
       completed = page.url.searchParams.get("completed") === "true";
+      failed = !completed && page.url.searchParams.get("failed") === 'true';
       // if(browser) featuredObjectives = JSON.parse(window.localStorage.getItem("featured_objectives") || "[]");
       // route = await fetchRoute();
       // progress = await fetchProgress();
@@ -105,23 +108,25 @@
       //   setMostRecents();
       // },1e3)
     })
+
 </script>
 
     <div class="container">
 {#if objective !== "none"}
 
-            <div class="top notif-in" style:padding-bottom={completed ? "0" : "20px"}>
+            <div class="top notif-in" style:padding-bottom={(completed || failed) ? "0" : "20px"}>
                 <div class="column">
                     <div class="row">
                         <div class="row">
-                            <img id="icon" src={questIcon} alt="">
-                            <h1>OBJECTIVE{completed ? " COMPLETE!" : ""}</h1>
+                            <!-- <img id="icon" src={questIcon} alt=""> -->
+                            <QuestIcon fill={failed ? AppConfig.colors.botw_red : AppConfig.colors.triforce} />
+                            <h1 style={failed ? `--text-effect: ${AppConfig.colors.botw_red};` : ""}>OBJECTIVE{completed ? " COMPLETE!" : failed ? " FAILED" : ""}</h1>
                         </div>
                         <div class="row">
                             <h3 style:color="var(--text)">{objective.toUpperCase()}</h3>
                         </div>
                     </div>
-                        {#if description !== "none" && !completed}
+                        {#if description !== "none" && (!completed && !failed)}
                             <div class="row">
                                 <p class='description'>{description.toUpperCase()}</p>
                             </div>

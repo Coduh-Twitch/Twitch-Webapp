@@ -2,6 +2,10 @@
 
 export const AppConfig = {
   api_version: 43,
+  colors: {
+    triforce: "#FCC413",
+    botw_red: "#FE533D"
+  },
   scopes: [
     "channel:manage:broadcast",
     "channel:read:goals",
