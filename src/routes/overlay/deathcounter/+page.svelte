@@ -1,32 +1,20 @@
 <script lang="ts">
-    import { SlopMode, type ApiResponse, type DBAppConfig, type DBCounter } from "$lib/types";
-    import { Button, Column, getUserData, Heading, Text, Row } from "duckylib";
+    import { type ApiResponse, type DBCounter } from "$lib/types";
     import { onMount } from "svelte";
     import glorp from "$lib/assets/emotes/glorp.png";
     import dummy from "$lib/assets/emotes/coduhNotSmart.png";
     import kiss from "$lib/assets/emotes/catKiss.avif";
     import twerk from "$lib/assets/emotes/duckTwerk.avif";
-    import spank from "$lib/assets/emotes/dittoSlap.gif";
     import joel from "$lib/assets/emotes/joel.avif";
     import crunch from "$lib/assets/emotes/crunch.avif";
     import joelpride from "$lib/assets/emotes/joelpride.avif";
     import glorpa from "$lib/assets/emotes/glorpa.png";
-    import L from "$lib/assets/emotes/LL.avif";
     import smoke from "$lib/assets/emotes/SMOKE.avif";
     import pow from "$lib/assets/emotes/catPOW.avif";
     import what from "$lib/assets/emotes/WHAT.avif";
     import catjam from "$lib/assets/emotes/catJAM.avif";
     import noooo from "$lib/assets/emotes/NOOOO.avif";
-    import cookie from "$lib/assets/emotes/cookieOhYeah.gif";
     import { page } from "$app/state";
-
-    async function getAppConfig(): Promise<DBAppConfig | null> {
-        const res: ApiResponse<DBAppConfig | null> = await (
-            await fetch(`/api/bot/config`)
-        ).json();
-
-        return res.data;
-    }
 
     async function fetchCounter(id: string): Promise<DBCounter> {
       const res: ApiResponse<DBCounter> = await (await fetch(`/api/counters/${id}`)).json();
@@ -53,11 +41,7 @@
         emotes[Math.floor(Math.random() * emotes.length)] || pow,
     );
 
-    let config: DBAppConfig | null = $state(null);
     let counter: DBCounter | null = $state(null);
-
-    let mode: "stuck" | "deaths" | "none" = $state("deaths");
-    let videoId = $state("a");
 
     let label: string = $state(page.url.searchParams.get("label") || "Deaths:")
     let fontSize: number = $state(parseFloat(page.url.searchParams?.get("fontSize") || "4") || 4);
@@ -70,74 +54,20 @@
     })
 
     onMount(async () => {
-        config = await getAppConfig();
         counter = await fetchCounter("deaths");
-        mode = config?.show_death_count
-            ? "deaths"
-            : config?.show_stuck_count
-              ? "stuck"
-              : "none";
 
         setInterval(async () => {
-            config = await getAppConfig();
             counter = await fetchCounter("deaths");
-            if (
-                mode === "none" &&
-                (config?.show_death_count || config?.show_stuck_count)
-            ) {
-                mode = config?.show_death_count
-                    ? "deaths"
-                    : config?.show_stuck_count
-                      ? "stuck"
-                      : "none";
-            } else if (mode === "deaths" && !config?.show_death_count) {
-                if (!config?.show_stuck_count) {
-                    mode = "none";
-                } else mode = "stuck";
-            } else if (mode === "stuck" && !config?.show_stuck_count) {
-                if (!config?.show_death_count) {
-                    mode = "none";
-                } else mode = "deaths";
-            }
-            if (config?.slop_mode === SlopMode.SUBWAY_SURFERS)
-                videoId = "ChBg4aowzX8";
-            if (config?.slop_mode === SlopMode.SOAP) videoId = "6NsvJ9P7kSU";
-            if (config?.slop_mode === SlopMode.CUSTOM)
-                videoId = config.custom_video_id;
         }, 3e2);
-
-        let i = $state(0);
-        setInterval(() => {
-            i++;
-            console.log("time to switch");
-            let ran = false;
-            if (mode === "deaths" && config?.show_stuck_count) {
-                mode = "stuck";
-                ran = true;
-            }
-            if (mode === "stuck" && !ran && config?.show_death_count) {
-                mode = "deaths";
-                ran = true;
-            }
-            if (i === 2) {
-                i = 0;
-                emote =
-                    emotes[Math.floor(Math.random() * emotes.length)] || pow;
-            }
-        }, 10e3);
     });
 </script>
 
 <div
-    class="container{!config?.show_death_count && !config?.show_stuck_count
-        ? ' hidden'
-        : ' showing'}"
+    class="container"
 >
-    {#if !config?.slop_mode || ((config?.slop_mode || 0) as SlopMode) === SlopMode.NONE}
         {#if withEmote}
-            <img src={emote} style:height={`${fontSize}em`} />
+            <img src={emote} style:height={`${fontSize}em`} alt="emote" />
         {/if}
-        {#if mode === "deaths"}
             <h1 style:font-size={`${fontSize}em`} style:color={color}>{label}</h1>
             <h1 style:font-size={`${fontSize}em`} style:color={color}>
                 {(counter?.count || 0) === 67
@@ -146,28 +76,6 @@
                       ? "69 ;)"
                       : (counter?.count || 0).toLocaleString()}
             </h1>
-        <!-- {:else if mode === "stuck"}
-            <h1 style:font-size={`${fontSize}em`} style:color={color}>
-                Stuck: {config?.stuck_count || 0} Time{(config?.stuck_count ||
-                    0) === 1
-                    ? ""
-                    : "s"}
-            </h1> -->
-        {/if}
-    {:else}
-        <iframe
-            width="200"
-            height="113"
-            src="https://www.youtube.com/embed/{videoId}?autoplay=1&mute=1&rel=0&modestbranding&loop=1"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
-        ></iframe>
-    {/if}
-    <!-- <img src={twerk} />
-    <h1>"coduh stinks" in chat</h1> -->
 </div>
 
 {#if withOutline}
@@ -226,26 +134,12 @@
     }
 
     img {
-        /*height: 4em;*/
         aspect-ratio: 1/1;
     }
 
     h1 {
         letter-spacing: 0.1em;
-        /*margin-bottom: 0.15em;*/
-        /*margin-left: 0.1em;*/
-        /*line-height: 1em;*/
         font-family: "triforce", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        /*font-family: "Comic Relief";*/
-        /*font-weight: bold;*/
         text-shadow: 2px 2px 5px black;
-    }
-
-    .hidden {
-        animation: 1s fadeOut forwards;
-    }
-
-    .showing {
-        animation: 1s fadeIn forwards;
     }
 </style>
