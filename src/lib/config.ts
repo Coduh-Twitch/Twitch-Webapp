@@ -4,7 +4,14 @@ export const AppConfig = {
   api_version: 43,
   colors: {
     triforce: "#FCC413",
-    botw_red: "#FE533D"
+    botw_red: "#FE533D",
+    minecraft: {
+      yellow: "#FFFF00",
+      pink: "#FF97FF",
+      background: "#212121",
+      border: "#555555",
+      red: "#FF5555"
+    }
   },
   scopes: [
     "channel:manage:broadcast",
