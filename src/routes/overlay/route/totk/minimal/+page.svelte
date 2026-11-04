@@ -25,26 +25,26 @@
     ];
 
     async function fetchRoute(): Promise<DBRoute | null> {
-      const res: ApiResponse<DBRoute | null> = await (await fetch(`/api/route/botw`)).json();
+      const res: ApiResponse<DBRoute | null> = await (await fetch(`/api/route/totk`)).json();
       return res.data || null;
     }
 
     async function fetchProgress(): Promise<DBRouteProgress | null> {
-      const res: ApiResponse<DBRouteProgress | null> = await (await fetch(`/api/route/botw/progress/${PUBLIC_TWITCH_CHANNEL_ID}`)).json();
+      const res: ApiResponse<DBRouteProgress | null> = await (await fetch(`/api/route/totk/progress/${PUBLIC_TWITCH_CHANNEL_ID}`)).json();
       return res.data || null;
     }
 
     async function fetchCompleted(): Promise<DBCompletableObjective[]> {
-      const res: ApiResponse<DBCompletableObjective[] | null> = await (await fetch(`/api/route/botw/progress/${PUBLIC_TWITCH_CHANNEL_ID}/objectives/completed`)).json();
+      const res: ApiResponse<DBCompletableObjective[] | null> = await (await fetch(`/api/route/totk/progress/${PUBLIC_TWITCH_CHANNEL_ID}/objectives/completed`)).json();
       return res.data || [];
     }
 
     async function completeObjective(objectiveId: string): Promise<void> {
-      await fetch(`/api/route/botw/progress/${PUBLIC_TWITCH_CHANNEL_ID}/objectives/${objectiveId}/complete`, {method: "POST"})
+      await fetch(`/api/route/totk/progress/${PUBLIC_TWITCH_CHANNEL_ID}/objectives/${objectiveId}/complete`, {method: "POST"})
     }
 
     async function unCompleteObjective(objectiveId: string): Promise<void> {
-      await fetch(`/api/route/botw/progress/${PUBLIC_TWITCH_CHANNEL_ID}/objectives/${objectiveId}/uncomplete`, {method: "POST"})
+      await fetch(`/api/route/totk/progress/${PUBLIC_TWITCH_CHANNEL_ID}/objectives/${objectiveId}/uncomplete`, {method: "POST"})
     }
 
     let currentCategory: string = $state("great-plateau");

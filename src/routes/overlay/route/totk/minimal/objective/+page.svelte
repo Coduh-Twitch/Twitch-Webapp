@@ -1,90 +1,9 @@
 <script lang="ts">
-    import { browser } from "$app/environment";
     import { page } from "$app/state";
-    import { PUBLIC_TWITCH_CHANNEL_ID } from "$env/static/public";
-    import questIcon from "$lib/assets/quest_icon.png";
-    import QuestIcon from "$lib/components/QuestIcon.svelte";
     import TotkQuestIcon from "$lib/components/TotkQuestIcon.svelte";
     import { AppConfig } from "$lib/config";
-    import type { ApiResponse, DBCompletableObjective, DBObjective, DBRoute, DBRouteProgress } from "$lib/types";
     import { onMount } from "svelte";
 
-    // let route: DBRoute | null = $state(null);
-    // let progress: DBRouteProgress | null = $state(null);
-    // let completed: DBCompletableObjective[] = $state([]);
-
-    // const routeCategories = [
-    //     { id: "great-plateau", order: 1 },
-    //     { id: "seeking-guidance", order: 2 },
-    //     { id: "zoras-domain", order: 3 },
-    //     { id: "goron-city", order: 4 },
-    //     { id: "rito-village", order: 5 },
-    //     { id: "gerudo-town", order: 6 },
-    //     { id: "masters-sword-and-past", order: 7 },
-    //     { id: "confronting-the-calamity", order: 8 },
-    //     { id: "shrines-and-collectibles", order: 9 },
-    // ];
-
-    // async function fetchRoute(): Promise<DBRoute | null> {
-    //   const res: ApiResponse<DBRoute | null> = await (await fetch(`/api/route/botw`)).json();
-    //   return res.data || null;
-    // }
-
-    // async function fetchProgress(): Promise<DBRouteProgress | null> {
-    //   const res: ApiResponse<DBRouteProgress | null> = await (await fetch(`/api/route/botw/progress/${PUBLIC_TWITCH_CHANNEL_ID}`)).json();
-    //   return res.data || null;
-    // }
-
-    // async function fetchCompleted(): Promise<DBCompletableObjective[]> {
-    //   const res: ApiResponse<DBCompletableObjective[] | null> = await (await fetch(`/api/route/botw/progress/${PUBLIC_TWITCH_CHANNEL_ID}/objectives/completed`)).json();
-    //   return res.data || [];
-    // }
-
-    // async function completeObjective(objectiveId: string): Promise<void> {
-    //   await fetch(`/api/route/botw/progress/${PUBLIC_TWITCH_CHANNEL_ID}/objectives/${objectiveId}/complete`, {method: "POST"})
-    // }
-
-    // async function unCompleteObjective(objectiveId: string): Promise<void> {
-    //   await fetch(`/api/route/botw/progress/${PUBLIC_TWITCH_CHANNEL_ID}/objectives/${objectiveId}/uncomplete`, {method: "POST"})
-    // }
-
-    // let currentCategory: string = $state("great-plateau");
-    // let currentObjective: DBObjective | null = $state(null);
-    // let nextObjective: DBObjective | null = $state(null);
-
-    // let featuredObjectives: string[] = $state([]);
-
-    // let lastCompleted: DBObjective | null = $state(null);
-    // let showingCompleted = $state(false);
-
-    // function setMostRecents() {
-    //   let nonCompleted = (route?.objectives || []).filter(o => !completed.some(c => c.objective_id === o.objective_id)).sort((a, b) => (routeCategories.find(c => c.id === a.category_id)?.order || 0) - (routeCategories.find(c => c.id === b.category_id)?.order || 0));
-    //   let recent = nonCompleted[0];
-    //   let next = nonCompleted[1];
-
-    //   currentCategory = recent.category_id;
-    //   currentObjective = recent;
-    //   nextObjective = next;
-
-    //   let lc = null;
-    //   if(!lastCompleted) lc = completed.filter(c => !featuredObjectives.includes(c.objective_id)).sort((a, b) => new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime())?.[0] || null;
-    //   if(lc) lastCompleted = route?.objectives.find(o => o.objective_id === lc.objective_id) || null;
-    //   if(lastCompleted && !featuredObjectives.includes(lastCompleted.objective_id)) {
-    //     featuredObjectives.push(lastCompleted.objective_id);
-    //     if(browser) window.localStorage.setItem("featured_objectives", JSON.stringify(featuredObjectives))
-    //   }
-
-    //   if(!showingCompleted && lastCompleted) {
-    //     showingCompleted = true;
-    //     setTimeout(() => {
-    //       lastCompleted = null;
-    //       setTimeout(() => {
-    //         showingCompleted = false;
-    //       },5e2)
-    //     },10e3);
-    //   }
-    // }
-    //
     let objective: string = $state(page.url.searchParams.get("objective") || "none");
     let description: string = $state(page.url.searchParams.get("description") || "none");
 
@@ -96,18 +15,7 @@
       description = page.url.searchParams.get("description") || "none";
       completed = page.url.searchParams.get("completed") === "true";
       failed = !completed && page.url.searchParams.get("failed") === 'true';
-      // if(browser) featuredObjectives = JSON.parse(window.localStorage.getItem("featured_objectives") || "[]");
-      // route = await fetchRoute();
-      // progress = await fetchProgress();
-      // completed = await fetchCompleted();
-      // setMostRecents();
 
-      // setInterval(async () => {
-      //   route = await fetchRoute();
-      //   progress = await fetchProgress();
-      //   completed = await fetchCompleted();
-      //   setMostRecents();
-      // },1e3)
     })
 
 </script>
@@ -135,12 +43,6 @@
                 </div>
 
             </div>
-
-            <!-- <div class="bottom">
-                <h3>{currentObjective?.category_name.toUpperCase()}</h3>
-                <h2 class="objective">{currentObjective?.name.toUpperCase()}</h2>
-                <p class="description">{currentObjective?.description.toUpperCase()}</p>
-            </div> -->
 
 {/if}
 </div>
