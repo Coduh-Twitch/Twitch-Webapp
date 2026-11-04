@@ -311,6 +311,7 @@
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        letter-spacing: 0.1em;
     }
 
     p:not(.value) {
@@ -382,7 +383,7 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        gap: 0.33em;
+        gap: 0.5em;
     }
 
     .stat:nth-child(odd) {
