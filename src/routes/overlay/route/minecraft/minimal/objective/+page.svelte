@@ -50,10 +50,11 @@
         height: 100vh;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         font-family: "minecraft";
         text-align: center;
+        padding-left: 1em;
     }
 
     :root {
@@ -108,9 +109,12 @@
     }
 
     .toast {
+        --scale: 3;
+        --slice: 4;
+
         box-shadow: 0px 0px 30px 3px var(--bg-dark);
-        width: fit-content;
-        min-width: 500px;
+        min-width: calc(160px * var(--scale));
+        min-height: calc(32px * var(--scale));
         background-color: var(--bg);
         display: flex;
         flex-direction: row;
@@ -120,6 +124,11 @@
         text-align: left !important;
         border: 5px solid var(--border);
         padding: 1em;
+
+        image-rendering: pixelated;
+        border: calc(var(--slice) * var(--scale) * 1px) solid transparent;
+        border-image: url('$lib/assets/advancement.png') var(--slice) fill / calc(var(--slice) * var(--scale) * 1px) stretch;
+        box-sizing: border-box;
     }
 
     .row {
