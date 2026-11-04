@@ -7,5 +7,6 @@
     <Text>Choose a game to manage its route</Text>
     <Column heightPx='fit'>
         <Text sizeEm={2}><a href="/route/botw">Breath of the Wild</a></Text>
+        <Text sizeEm={2}><a href="/route/totk">Tears of the Kingdom</a></Text>
     </Column>
 </Column>

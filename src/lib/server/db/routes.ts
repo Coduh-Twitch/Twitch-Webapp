@@ -28,7 +28,7 @@ export const writeRoute = (id: string, name: string, route: Record<string, Objec
     if (!obj) {
       db.insert(route_objectives).values(objective).returning().get()
     } else {
-      db.update(route_objectives).set(objective).returning().get()
+      db.update(route_objectives).set(objective).where(eq(route_objectives.id, obj.id)).returning().get()
     }
   }
 

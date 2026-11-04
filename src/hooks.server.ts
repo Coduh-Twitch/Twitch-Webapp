@@ -28,13 +28,13 @@ export const handle: Handle = async ({ event, resolve }) => {
     !event.cookies.get("token-0") ||
     event.cookies.get("token-0") !== session?.access_token
   ) {
-    if (session) {
-      if (session.user_id === PUBLIC_TWITCH_CHANNEL_ID) {
-        event.cookies.set("token-0", session.access_token, { path: "/" });
-        if (session.refresh_token)
-          event.cookies.set("token-r", session.refresh_token, { path: "/" });
-      }
-    }
+    // if (session) {
+    //   if (session.user_id === PUBLIC_TWITCH_CHANNEL_ID) {
+    //     event.cookies.set("token-0", session.access_token, { path: "/" });
+    //     if (session.refresh_token)
+    //       event.cookies.set("token-r", session.refresh_token, { path: "/" });
+    //   }
+    // }
   }
   if (event.request.method === "OPTIONS") {
     return new Response(null, {
