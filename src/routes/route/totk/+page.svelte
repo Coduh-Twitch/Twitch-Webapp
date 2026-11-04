@@ -9,7 +9,7 @@
         DBObjective,
         DBCounter,
     } from "$lib/types";
-    import { Button, Column, Heading } from "duckylib";
+    import { Button, Column, Heading, Row, Text } from "duckylib";
     import { onMount } from "svelte";
 
     let route: DBRoute | null = $state(null);
@@ -80,7 +80,11 @@
     let korokCounter: DBCounter | null = $state(null);
     let orbCounter: DBCounter | null = $state(null);
     let beastCounter: DBCounter | null = $state(null);
-    let questCounter: DBCounter | null = $state(null);
+
+    let fireTempleCounter: DBCounter | null = $state(null);
+    let waterTempleCounter: DBCounter | null = $state(null);
+    let windTempleCounter: DBCounter | null = $state(null);
+    let lightningTempleCounter: DBCounter | null = $state(null);
 
     function setMostRecents() {
         let nonCompleted = (route?.objectives || [])
@@ -111,7 +115,11 @@
         korokCounter = await fetchCounter("korok-totk");
         orbCounter = await fetchCounter("spirit-orbs-totk");
         beastCounter = await fetchCounter("divine-beasts-totk");
-        questCounter = await fetchCounter("side-quests-totk");
+
+        fireTempleCounter = await fetchCounter("temple-totk-fire");
+        waterTempleCounter = await fetchCounter("temple-totk-water");
+        windTempleCounter = await fetchCounter("temple-totk-wind");
+        lightningTempleCounter = await fetchCounter("temple-totk-lightning");
         setMostRecents();
 
         setInterval(async () => {
@@ -122,7 +130,11 @@
             korokCounter = await fetchCounter("korok-totk");
             orbCounter = await fetchCounter("spirit-orbs-totk");
             beastCounter = await fetchCounter("divine-beasts-totk");
-            questCounter = await fetchCounter("side-quests-totk");
+
+            fireTempleCounter = await fetchCounter("temple-totk-fire");
+            waterTempleCounter = await fetchCounter("temple-totk-water");
+            windTempleCounter = await fetchCounter("temple-totk-wind");
+            lightningTempleCounter = await fetchCounter("temple-totk-lightning");
             setMostRecents();
         }, 5e2);
     });
@@ -144,8 +156,29 @@
         {#if beastCounter}
             <CounterItem counter={beastCounter} />
         {/if}
-        {#if questCounter}
-            <CounterItem counter={questCounter} />
+        {#if fireTempleCounter}
+            <Row>
+                <Text>🔥</Text>
+                <CounterItem counter={fireTempleCounter} />
+            </Row>
+        {/if}
+        {#if windTempleCounter}
+            <Row>
+                <Text>🌪️</Text>
+                <CounterItem counter={windTempleCounter} />
+            </Row>
+        {/if}
+        {#if waterTempleCounter}
+            <Row>
+                <Text>🌊</Text>
+                <CounterItem counter={waterTempleCounter} />
+            </Row>
+        {/if}
+        {#if lightningTempleCounter}
+            <Row>
+                <Text>⚡</Text>
+                <CounterItem counter={lightningTempleCounter} />
+            </Row>
         {/if}
         <Heading weight="bold">{progress.progressPercentage}% Completed</Heading
         >

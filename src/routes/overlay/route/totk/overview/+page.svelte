@@ -6,6 +6,19 @@
     import korokIcon from "$lib/assets/korok_icon.png"
     import shrineIcon from "$lib/assets/totk_shrine.png"
     import deathsIcon from "$lib/assets/deaths_icon.png"
+
+    import temple_fire_complete from "$lib/assets/temple_fire_complete.png";
+    import temple_fire_incomplete from "$lib/assets/temple_fire_incomplete.png";
+
+    import temple_wind_complete from "$lib/assets/temple_wind_complete.png";
+    import temple_wind_incomplete from "$lib/assets/temple_wind_incomplete.png";
+
+    import temple_water_complete from "$lib/assets/temple_water_complete.png";
+    import temple_water_incomplete from "$lib/assets/temple_water_incomplete.png";
+
+    import temple_lightning_complete from "$lib/assets/temple_lightning_complete.png";
+    import temple_lightning_incomplete from "$lib/assets/temple_lightning_incomplete.png";
+
     import { AppConfig } from "$lib/config";
     import type { ApiResponse, DBCompletableObjective, DBCounter, DBObjective, DBRoute, DBRouteProgress } from "$lib/types";
     import { onMount } from "svelte";
@@ -91,7 +104,11 @@
     let korokCounter: DBCounter | null = $state(null);
     let orbCounter: DBCounter | null = $state(null);
     let beastCounter: DBCounter | null = $state(null);
-    let questCounter: DBCounter | null = $state(null);
+
+    let fireTempleCounter: DBCounter | null = $state(null);
+    let waterTempleCounter: DBCounter | null = $state(null);
+    let windTempleCounter: DBCounter | null = $state(null);
+    let lightningTempleCounter: DBCounter | null = $state(null);
 
     onMount(async () => {
       if(browser) featuredObjectives = JSON.parse(window.localStorage.getItem("featured_objectives") || "[]");
@@ -102,7 +119,11 @@
       korokCounter = await fetchCounter("korok-totk");
       orbCounter = await fetchCounter("spirit-orbs-totk");
       beastCounter = await fetchCounter("divine-beasts-totk");
-      questCounter = await fetchCounter("side-quests-totk");
+
+      fireTempleCounter = await fetchCounter("temple-totk-fire");
+      waterTempleCounter = await fetchCounter("temple-totk-water");
+      windTempleCounter = await fetchCounter("temple-totk-wind");
+      lightningTempleCounter = await fetchCounter("temple-totk-lightning");
       setMostRecents();
 
       setInterval(async () => {
@@ -113,7 +134,11 @@
         korokCounter = await fetchCounter("korok-totk");
         orbCounter = await fetchCounter("spirit-orbs-totk");
         beastCounter = await fetchCounter("divine-beasts-totk");
-        questCounter = await fetchCounter("side-quests-totk");
+
+        fireTempleCounter = await fetchCounter("temple-totk-fire");
+        waterTempleCounter = await fetchCounter("temple-totk-water");
+        windTempleCounter = await fetchCounter("temple-totk-wind");
+        lightningTempleCounter = await fetchCounter("temple-totk-lightning");
         setMostRecents();
       },1e3)
     })
@@ -159,6 +184,34 @@
                             <p class="value">{deathCounter?.count.toLocaleString()}</p>
                         </div>
                         <p>TOTAL DEATHS</p>
+                    </div>
+
+                    <div class="stat">
+                        <div class="statistic">
+                            <img style:height="1.5em" src={(waterTempleCounter?.count || 0) > 0 ? temple_water_complete : temple_water_incomplete} alt="water icon" class="icon">
+                        </div>
+                        <p>WATER TEMPLE ({(waterTempleCounter?.count || 0) > 0 ? "COMPLETE" : "INCOMPLETE"})</p>
+                    </div>
+
+                    <div class="stat">
+                        <div class="statistic">
+                            <img style:height="1.5em" src={(fireTempleCounter?.count || 0) > 0 ? temple_fire_complete : temple_fire_incomplete} alt="fire icon" class="icon">
+                        </div>
+                        <p>FIRE TEMPLE ({(fireTempleCounter?.count || 0) > 0 ? "COMPLETE" : "INCOMPLETE"})</p>
+                    </div>
+
+                    <div class="stat">
+                        <div class="statistic">
+                            <img style:height="1.5em" src={(windTempleCounter?.count || 0) > 0 ? temple_wind_complete : temple_wind_incomplete} alt="wind icon" class="icon">
+                        </div>
+                        <p>WIND TEMPLE ({(windTempleCounter?.count || 0) > 0 ? "COMPLETE" : "INCOMPLETE"})</p>
+                    </div>
+
+                    <div class="stat">
+                        <div class="statistic">
+                            <img style:height="1.5em" src={(lightningTempleCounter?.count || 0) > 0 ? temple_lightning_complete : temple_lightning_incomplete} alt="lightning icon" class="icon">
+                        </div>
+                        <p>LIGHTNING TEMPLE ({(lightningTempleCounter?.count || 0) > 0 ? "COMPLETE" : "INCOMPLETE"})</p>
                     </div>
 
                 </div>
@@ -261,7 +314,7 @@
     }
 
     p:not(.value) {
-        font-size: 1.1em;
+        font-size: 1.15em;
     }
 
     .value {
@@ -314,8 +367,7 @@
         justify-content: space-between;
         width: 100%;
         text-align: right;
-        padding-left: 1em;
-        padding-right: 1em;
+        padding: 0.15em 1em;
         box-sizing: border-box;
     }
 
