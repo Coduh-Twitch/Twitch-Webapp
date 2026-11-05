@@ -19,6 +19,9 @@
     import temple_lightning_complete from "$lib/assets/temple_lightning_complete.png";
     import temple_lightning_incomplete from "$lib/assets/temple_lightning_incomplete.png";
 
+    import completeIcon from "$lib/assets/totk_complete.png"
+    import incompleteIcon from "$lib/assets/totk_incomplete.png"
+
     import { AppConfig } from "$lib/config";
     import type { ApiResponse, DBCompletableObjective, DBCounter, DBObjective, DBRoute, DBRouteProgress } from "$lib/types";
     import { onMount } from "svelte";
@@ -190,28 +193,32 @@
                         <div class="statistic">
                             <img style:height="1.5em" src={(waterTempleCounter?.count || 0) > 0 ? temple_water_complete : temple_water_incomplete} alt="water icon" class="icon">
                         </div>
-                        <p>WATER TEMPLE ({(waterTempleCounter?.count || 0) > 0 ? "COMPLETE" : "INCOMPLETE"})</p>
+                        <p>WATER TEMPLE</p>
+                        <img style:height="1.5em" src={(waterTempleCounter?.count || 0) > 0 ? completeIcon : incompleteIcon} alt="status icon" class="icon">
                     </div>
 
                     <div class="stat">
                         <div class="statistic">
                             <img style:height="1.5em" src={(fireTempleCounter?.count || 0) > 0 ? temple_fire_complete : temple_fire_incomplete} alt="fire icon" class="icon">
                         </div>
-                        <p>FIRE TEMPLE ({(fireTempleCounter?.count || 0) > 0 ? "COMPLETE" : "INCOMPLETE"})</p>
+                        <p>FIRE TEMPLE</p>
+                        <img style:height="1.5em" src={(fireTempleCounter?.count || 0) > 0 ? completeIcon : incompleteIcon} alt="status icon" class="icon">
                     </div>
 
                     <div class="stat">
                         <div class="statistic">
                             <img style:height="1.5em" src={(windTempleCounter?.count || 0) > 0 ? temple_wind_complete : temple_wind_incomplete} alt="wind icon" class="icon">
                         </div>
-                        <p>WIND TEMPLE ({(windTempleCounter?.count || 0) > 0 ? "COMPLETE" : "INCOMPLETE"})</p>
+                        <p>WIND TEMPLE</p>
+                        <img style:height="1.5em" src={(windTempleCounter?.count || 0) > 0 ? completeIcon : incompleteIcon} alt="status icon" class="icon">
                     </div>
 
                     <div class="stat">
                         <div class="statistic">
                             <img style:height="1.5em" src={(lightningTempleCounter?.count || 0) > 0 ? temple_lightning_complete : temple_lightning_incomplete} alt="lightning icon" class="icon">
                         </div>
-                        <p>LIGHTNING TEMPLE ({(lightningTempleCounter?.count || 0) > 0 ? "COMPLETE" : "INCOMPLETE"})</p>
+                        <p>LIGHTNING TEMPLE</p>
+                        <img style:height="1.5em" src={(lightningTempleCounter?.count || 0) > 0 ? completeIcon : incompleteIcon} alt="status icon" class="icon">
                     </div>
 
                 </div>
@@ -370,6 +377,7 @@
         text-align: right;
         padding: 0.15em 1em;
         box-sizing: border-box;
+        gap: 0.66em;
     }
 
     .statistic {
