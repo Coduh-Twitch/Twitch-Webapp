@@ -27,6 +27,8 @@ export const AppConfig = {
     "clips:edit",
     "user:read:moderated_channels",
     "moderator:read:chatters",
+    "channel:manage:predictions",
+    "channel:read:predictions"
   ],
   word_list_bin_id: "XjEbxLQL",
 
