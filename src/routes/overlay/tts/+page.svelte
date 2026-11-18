@@ -61,22 +61,31 @@
         const url = URL.createObjectURL(blob);
         console.log(url);
 
-        if (audio) {
+        if (audio && !playing) {
             URL.revokeObjectURL(audio.src);
             audio.pause();
         }
 
-        audio = new Audio(url);
-        audio.volume = 0.3;
-        audio.play();
+        try {
+          audio = new Audio(url);
+          audio.volume = 0.3;
+          audio.play();
+        } catch(e) {
+          attempts.set(itemId, (attempts.get(itemId) || 0)+1);
+          if((attempts.get(itemId) || 0) >= 3) {
+            audio.pause();
+            await endTTS(itemId);
+            console.log("play failed 3 attempts in a row, skipping");
+          }
+        }
 
         audio.onplay = () => {
             playing = true;
         };
 
         audio.onended = async () => {
-            await endTTS(itemId);
-            setTimeout(() => {
+            setTimeout(async () => {
+                await endTTS(itemId);
                 playing = false;
             }, 3e3);
         };
@@ -88,26 +97,35 @@
     let currentQueueItem: TTSQueueItem | null = $state(null);
     let audio: HTMLAudioElement;
 
+    let attempts: Map<string, number> = $state(new Map());
+
     onMount(() => {
+      console.log("TTS Starting...")
         let interval = setInterval(async () => {
             queue = await fetchQueue();
-            if (
-                currentQueueItem &&
-                ((playing && queue[0] && queue[0].id !== currentQueueItem.id) ||
-                    !queue[0])
-            ) {
-                console.log("CURRENT ITEM", currentQueueItem.id);
-                await skipTTS(currentQueueItem.id);
-            }
+            // if (
+            //     currentQueueItem &&
+            //     ((playing && queue[0] && queue[0].id !== currentQueueItem.id) ||
+            //         !queue[0])
+            // ) {
+            //     console.log("CURRENT ITEM", currentQueueItem.id);
+            //     await skipTTS(currentQueueItem.id);
+            // }
             if (!playing && queue[0]) {
                 if (queue[0].isTos) {
                     await skipTTS(queue[0].id);
                 } else {
                     currentQueueItem = queue[0];
-                    await speak(currentQueueItem.id);
+                    attempts.set(currentQueueItem.id, (attempts.get(currentQueueItem.id) || 0)+1);
+                    if((attempts.get(currentQueueItem.id) || 0) >= 3) {
+                      await skipTTS(currentQueueItem.id);
+                      console.log("play failed 3 attempts in a row, skipping");
+                    } else {
+                      await speak(currentQueueItem.id);
+                    }
                 }
             }
-        }, 3e3);
+        }, 1e3);
 
         return () => {
             console.log("Cleared Interval");
@@ -119,4 +137,4 @@
 {#if playing && ["localhost", "dev.ducky.wiki"].includes(page.url.hostname)}
     <h1>{currentQueueItem?.content}</h1>
 {/if}
-<audio bind:this={audio} autoplay volume={0.3}></audio>
+<audio bind:this={audio} volume={0.3}></audio>

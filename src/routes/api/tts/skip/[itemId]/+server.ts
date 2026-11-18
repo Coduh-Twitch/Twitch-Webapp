@@ -25,9 +25,14 @@ function utterancePath(queueItem: TTSQueueItem): string {
 }
 
 export const POST = async ({ request, fetch, params }): Promise<Response> => {
-  let res = await (
-    await fetch(`${PRIVATE_CHATBOT_APP_URL}/api/tts/skip/${params.itemId}`)
-  ).json();
+  try {
+    let res = await (
+      await fetch(`${PRIVATE_CHATBOT_APP_URL}/api/tts/skip/${params.itemId}`)
+    ).json();
 
-  return json(res);
+    return json(res);
+  } catch (e) {
+    console.log(e);
+    return json(null);
+  }
 };
