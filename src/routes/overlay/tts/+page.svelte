@@ -111,10 +111,16 @@
             //     console.log("CURRENT ITEM", currentQueueItem.id);
             //     await skipTTS(currentQueueItem.id);
             // }
+            if(playing && (!queue?.[0] || queue[0].id !== currentQueueItem?.id)) {
+              await skipTTS(currentQueueItem?.id);
+              console.log("Skipping TTS")
+              return;
+            }
             if (!playing && queue[0]) {
                 if (queue[0].isTos) {
                     await skipTTS(queue[0].id);
                 } else {
+
                     currentQueueItem = queue[0];
                     attempts.set(currentQueueItem.id, (attempts.get(currentQueueItem.id) || 0)+1);
                     if((attempts.get(currentQueueItem.id) || 0) >= 3) {
